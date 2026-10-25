@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { loadCard } from "./load.mjs";
 
-const { HomeConnectWasherCard, HomeConnectDishwasherCard, HomeConnectCardEditor, hcFindDevice, hcEsc } = loadCard("home-connect-card.js", [
+const { HomeConnectWasherCard, HomeConnectDishwasherCard, HomeConnectCardEditor, hcFindDevice, hcEsc, customElements } = loadCard("home-connect-card.js", [
   "HomeConnectWasherCard",
   "HomeConnectCardEditor",
   "HomeConnectDishwasherCard",
@@ -69,6 +69,48 @@ test("Pause shows for a never-pressed (unknown) button, not for an unavailable o
   assert.match(render(HomeConnectWasherCard, mockHass({ pauseState: "unknown" })), /data-action="pause"/);
   assert.match(render(HomeConnectWasherCard, mockHass({ pauseState: "2026-10-01T10:00:00+00:00" })), /data-action="pause"/);
   assert.doesNotMatch(render(HomeConnectWasherCard, mockHass({ pauseState: "unavailable" })), /data-action="pause"/);
+});
+
+test("show_power: false hides the power button", () => {
+  assert.match(render(HomeConnectWasherCard, mockHass()), /data-action="power"/);
+  assert.doesNotMatch(render(HomeConnectWasherCard, mockHass(), { show_power: false }), /data-action="power"/);
+});
+
+test("header shows the Home Connect logo unless show_logo is false, and the appliance illustration", () => {
+  const html = render(HomeConnectWasherCard, mockHass());
+  assert.match(html, /class="logo-link"/);
+  assert.match(html, /class="drum"/);
+  assert.doesNotMatch(render(HomeConnectWasherCard, mockHass(), { show_logo: false }), /class="logo-link"/);
+  assert.match(render(HomeConnectWasherCard, mockHass(), { icon: "mdi:washing-machine" }), /class="badge"/);
+});
+
+test("mini card: compact view, detail button toggles the full card", () => {
+  const Mini = customElements.get("home-connect-washer-mini-card");
+  const card = new Mini();
+  card.setConfig({});
+  card.hass = mockHass();
+  assert.match(card.shadowRoot.innerHTML, /ha-card class="mini"/);
+  assert.match(card.shadowRoot.innerHTML, /data-action="zoom"[^>]*><ha-icon icon="mdi:arrow-expand"/);
+  assert.doesNotMatch(card.shadowRoot.innerHTML, /data-select=/);
+  assert.deepEqual({ ...card.getGridOptions() }, { columns: 6, min_columns: 6 });
+  card._setZoom(true);
+  assert.doesNotMatch(card.shadowRoot.innerHTML, /ha-card class="mini"/);
+  assert.match(card.shadowRoot.innerHTML, /mdi:arrow-collapse/);
+  card._setZoom(false);
+  assert.match(card.shadowRoot.innerHTML, /ha-card class="mini"/);
+  const noZoom = new Mini();
+  noZoom.setConfig({ zoom: false });
+  noZoom.hass = mockHass();
+  assert.doesNotMatch(noZoom.shadowRoot.innerHTML, /data-action="zoom"/);
+  assert.equal(Mini.getConfigElement().mini, true);
+  assert.equal(Mini.getConfigElement().kind, "washer");
+});
+
+test("state badge on the illustration when paused, delayed or finished", () => {
+  assert.match(render(HomeConnectWasherCard, mockHass({ washerState: "pause" })), /class="picture st-pause"[\s\S]*class="pbadge"/);
+  assert.match(render(HomeConnectWasherCard, mockHass({ washerState: "finished" })), /class="sparkles"/);
+  assert.doesNotMatch(render(HomeConnectWasherCard, mockHass({ washerState: "run" })), /class="pbadge"/);
+  assert.doesNotMatch(render(HomeConnectWasherCard, mockHass({ washerState: "pause" }), { icon: "mdi:washing-machine" }), /class="pbadge"/);
 });
 
 test("an unknown operation state is escaped in the status line", () => {

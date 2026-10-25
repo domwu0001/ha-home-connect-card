@@ -54,6 +54,12 @@ var HcI18n = {
     ed_show_controls: 'Boutons de commande',
     ed_show_options: 'Options du programme',
     ed_show_alerts: 'Alertes',
+    ed_show_power: 'Bouton marche / arrêt',
+    ed_show_logo: 'Logo Home Connect',
+    ed_zoom: 'Bouton détail',
+    ed_zoom_helper: 'Bouton en haut à droite qui passe la mini-carte en carte complète et inversement',
+    zoom_in: 'Afficher la carte complète',
+    zoom_out: 'Revenir à la vue compacte',
     ed_language: 'Langue',
     ed_language_helper: 'Laisser vide pour suivre la langue de Home Assistant',
     ed_entities: 'Entités (avancé)',
@@ -125,6 +131,12 @@ var HcI18n = {
     ed_show_program: 'Program picker',
     ed_show_controls: 'Control buttons',
     ed_show_options: 'Program options',
+    ed_show_power: 'Power button',
+    ed_show_logo: 'Home Connect logo',
+    ed_zoom: 'Detail button',
+    ed_zoom_helper: 'Button at the top right that switches the mini card to the full card and back',
+    zoom_in: 'Show the full card',
+    zoom_out: 'Back to the compact view',
     ed_show_alerts: 'Alerts',
     ed_language: 'Language',
     ed_language_helper: 'Leave empty to follow the Home Assistant language',
@@ -304,6 +316,69 @@ var HC_LOGO = '<svg class="logo" viewBox="0 0 292 292" role="img" aria-label="Ho
   '<path fill="url(#hc-logo-g)" d="M146 .5A145.5 145.5 0 1 0 215 272L278 285Q288 287 286 277L270 220A145.5 145.5 0 0 0 146 .5Z"/>' +
   '<path fill="#fff" stroke="#fff" stroke-width="8" stroke-linejoin="round" d="M147.5 64L200 108.5V202H95V108.5Z"/></svg>';
 
+var HC_SITE = 'https://www.home-connect.com';
+
+// Appliance illustrations (front view). The state color lights the display; when running the
+// washer drum turns and the dishwasher projects its floor light, like the real appliances.
+var HC_ART = {
+  washer: '<svg viewBox="0 0 80 94" aria-hidden="true">' +
+    '<defs><linearGradient id="hc-wb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e2e6eb"/></linearGradient>' +
+    '<linearGradient id="hc-wr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dfe4ea"/><stop offset="1" stop-color="#97a2ae"/></linearGradient>' +
+    '<radialGradient id="hc-wg" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#9edbff"/><stop offset=".55" stop-color="#3b8fe0"/><stop offset="1" stop-color="#1c4c97"/></radialGradient>' +
+    '<clipPath id="hc-wc"><circle cx="40" cy="55" r="17"/></clipPath></defs><g class="shake">' +
+    '<rect x="10" y="88" width="9" height="4" rx="1.5" fill="#8f9aa6"/><rect x="61" y="88" width="9" height="4" rx="1.5" fill="#8f9aa6"/>' +
+    '<rect x="4" y="2" width="72" height="87" rx="9" fill="url(#hc-wb)" stroke="#c3cad2" stroke-width="1.2"/>' +
+    '<path d="M4.6 21H75.4" stroke="#c3cad2" stroke-width="1.2"/>' +
+    '<rect x="10" y="8" width="17" height="8" rx="2" fill="#fff" stroke="#c3cad2"/><path d="M13 12h11" stroke="#c3cad2" stroke-linecap="round"/>' +
+    '<rect x="33" y="8.5" width="17" height="7" rx="2" fill="#1d2632"/><rect class="led" x="35.5" y="11" width="9" height="2" rx="1"/>' +
+    '<circle cx="64" cy="12" r="5.2" fill="#fff" stroke="#aeb7c2" stroke-width="1.2"/><path d="M64 12V8.6" stroke="#7d8894" stroke-width="1.4" stroke-linecap="round"/>' +
+    '<circle cx="40" cy="55" r="25" fill="url(#hc-wr)"/><circle cx="40" cy="55" r="21" fill="#eef2f6"/><circle cx="40" cy="55" r="17" fill="url(#hc-wg)"/>' +
+    '<g clip-path="url(#hc-wc)"><path class="wave" d="M14 58q6.5-4 13 0t13 0 13 0 13 0V80H14Z" fill="#7fd0ff" opacity=".55"/>' +
+      '<g class="drum"><circle cx="33" cy="61" r="5.5" fill="#ff8a65" opacity=".9"/><circle cx="46" cy="63" r="4.5" fill="#fff59d" opacity=".9"/>' +
+      '<circle cx="41" cy="47" r="3.5" fill="#ffffff" opacity=".55"/><circle cx="31" cy="50" r="3" fill="#80cbc4" opacity=".9"/><circle cx="40" cy="55" r="12" fill="none" stroke="#fff" stroke-opacity=".25" stroke-dasharray="2 4"/></g></g>' +
+    '<g class="bubbles"><circle cx="34" cy="62" r="1.6"/><circle cx="44" cy="64" r="1.2"/><circle cx="39" cy="60" r="1"/></g>' +
+    '<path d="M28 44a16 16 0 0 1 12-6" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>' +
+    '<rect x="62.5" y="50" width="3" height="10" rx="1.5" fill="#aeb7c2"/></g></svg>',
+  dishwasher: '<svg viewBox="0 0 80 94" aria-hidden="true">' +
+    '<defs><linearGradient id="hc-db" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7f8fa"/><stop offset=".6" stop-color="#e3e7ec"/><stop offset="1" stop-color="#cfd5dc"/></linearGradient>' +
+    '<linearGradient id="hc-dp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#36404d"/><stop offset="1" stop-color="#1b222b"/></linearGradient>' +
+    '<linearGradient id="hc-dh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f6f8"/><stop offset="1" stop-color="#9aa5b1"/></linearGradient>' +
+    '<radialGradient id="hc-df" cx=".5" cy=".5" r=".5"><stop offset="0" class="floor-c" stop-opacity=".55"/><stop offset="1" class="floor-c" stop-opacity="0"/></radialGradient></defs>' +
+    '<ellipse class="floor" cx="40" cy="90" rx="30" ry="4" fill="url(#hc-df)"/>' +
+    '<g class="steam" fill="none" stroke="#b0bec5" stroke-width="2.2" stroke-linecap="round">' +
+      '<path d="M26 0q-3-4 0-8t0-8"/><path d="M40 0q-3-4 0-8t0-8"/><path d="M54 0q-3-4 0-8t0-8"/></g>' +
+    '<rect x="4" y="2" width="72" height="86" rx="7" fill="url(#hc-db)" stroke="#bac2cb" stroke-width="1.2"/>' +
+    '<path d="M11 2h58a7 7 0 0 1 7 7v9H4V9a7 7 0 0 1 7-7Z" fill="url(#hc-dp)"/>' +
+    '<rect x="10" y="7.5" width="16" height="6" rx="2" fill="#0d1218"/><rect class="led" x="12" y="9.5" width="8" height="2" rx="1"/>' +
+    '<circle cx="45" cy="10.5" r="1.6" fill="#7d8894"/><circle cx="52" cy="10.5" r="1.6" fill="#7d8894"/><circle cx="59" cy="10.5" r="1.6" fill="#7d8894"/><circle cx="67" cy="10.5" r="2.2" fill="none" stroke="#9aa5b1" stroke-width="1.2"/>' +
+    '<rect x="14" y="23" width="52" height="5" rx="2.5" fill="url(#hc-dh)" stroke="#9aa5b1" stroke-width=".8"/>' +
+    '<rect x="10" y="33" width="60" height="44" rx="4" fill="none" stroke="#fff" stroke-opacity=".75"/>' +
+    '<path d="M18 36l20 38M30 36l20 38" stroke="#fff" stroke-width="5" stroke-opacity=".22" stroke-linecap="round"/>' +
+    '<g class="drops" fill="#64b5f6"><circle cx="24" cy="50" r="1.4"/><circle cx="40" cy="44" r="1.4"/><circle cx="56" cy="50" r="1.4"/>' +
+      '<circle cx="32" cy="62" r="1.2"/><circle cx="48" cy="62" r="1.2"/></g>' +
+    '<rect x="4.6" y="80" width="70.8" height="7.4" rx="0" fill="#c3cad2" opacity=".6"/></svg>',
+};
+
+// State badge over the illustration: paused, waiting for a delayed start, or done.
+var HC_STATE_BADGE = {
+  pause: '<svg viewBox="0 0 24 24"><rect x="7" y="6" width="3.6" height="12" rx="1.2"/><rect x="13.4" y="6" width="3.6" height="12" rx="1.2"/></svg>',
+  delayedstart: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" fill="none" stroke="#fff" stroke-width="2"/>' +
+    '<path class="hand-h" d="M12 12V8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>' +
+    '<path class="hand-m" d="M12 12h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>',
+  finished: '<svg viewBox="0 0 24 24"><path class="check" d="M6.5 12.5l3.6 3.6 7.4-8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+// Sparkles around a finished appliance.
+var HC_SPARKLES = '<svg class="sparkles" viewBox="0 0 80 94" aria-hidden="true">' +
+  '<path d="M8 14l1.6 4 4 1.6-4 1.6L8 25.2l-1.6-4-4-1.6 4-1.6Z"/><path d="M72 30l1.2 3 3 1.2-3 1.2L72 38.4l-1.2-3-3-1.2 3-1.2Z"/>' +
+  '<path d="M68 2l1 2.4 2.4 1-2.4 1L68 8.8l-1-2.4-2.4-1 2.4-1Z"/></svg>';
+
+// The illustration with its state: animated while running, a badge when paused, delayed or done.
+var hcPicture = (art, state, illustrated) => {
+  var badge = illustrated && HC_STATE_BADGE[state]
+    ? `<span class="pbadge">${HC_STATE_BADGE[state]}</span>${state === 'finished' ? HC_SPARKLES : ''}` : '';
+  return `<div class="picture st-${hcEsc(state)}${state === 'run' ? ' running' : ''}">${art}${badge}</div>`;
+};
+
 // ── Base card ────────────────────────────────────────────────────────────────
 class HomeConnectBaseCard extends HTMLElement {
   static get kind() { return 'dishwasher'; }
@@ -324,7 +399,7 @@ class HomeConnectBaseCard extends HTMLElement {
   setConfig(config) {
     if (!config) throw new Error('Invalid configuration');
     this._config = Object.assign({
-      show_program: true, show_controls: true, show_options: true, show_alerts: true,
+      show_program: true, show_controls: true, show_options: true, show_alerts: true, show_power: true, show_logo: true,
     }, config);
     if (!this.shadowRoot) {
       this.attachShadow({ mode: 'open' });
@@ -432,7 +507,7 @@ class HomeConnectBaseCard extends HTMLElement {
       if (this._error.states == null) this._error.states = states;
       else if (this._error.states !== states) this._clearError();
     }
-    var sig = JSON.stringify([this._lang(), r.deviceId, this._confirming, this._reloading, this._starting,
+    var sig = JSON.stringify([this._lang(), r.deviceId, this._zoomed, this._confirming, this._reloading, this._starting,
       this._error ? [this._error.key, this._error.detail] : null, hcNoPowerOff.has(this._powerKey(r)), states]);
     if (sig === this._sig) return;
     // Don't rebuild while a dropdown is open in the card.
@@ -444,6 +519,11 @@ class HomeConnectBaseCard extends HTMLElement {
   }
 
   _powerKey(r) { return r.deviceId || r.ent.power; }
+
+  // Overridden by the mini cards.
+  _compact() { return false; }
+
+  _zoomButton() { return ''; }
 
   _render(r) {
     var c = this._config, ent = r.ent, hass = this._hass;
@@ -583,7 +663,7 @@ class HomeConnectBaseCard extends HTMLElement {
     // Once an appliance refused to turn off, the button only serves to turn it on.
     var noOff = powerOn && hcNoPowerOff.has(this._powerKey(r));
     var powerTitle = this._t(noOff ? 'power_off_unsupported' : 'power');
-    var powerBtn = ent.power && online
+    var powerBtn = c.show_power && ent.power && online
       ? `<button class="power${powerOn ? ' on' : ''}" data-action="power" title="${hcEsc(powerTitle)}" aria-label="${this._t('power')}"${noOff ? ' disabled' : ''}><ha-icon icon="mdi:power"></ha-icon></button>`
       : '';
 
@@ -591,23 +671,38 @@ class HomeConnectBaseCard extends HTMLElement {
       ? `<div class="error" role="alert" title="${hcEsc(this._error.detail)}"><ha-icon icon="mdi:alert-circle-outline"></ha-icon><span>${hcEsc(this._t(this._error.key))}</span></div>`
       : '';
 
-    var subtitle = hcEsc(statusText) + (running && progLabel ? ` · ${hcEsc(progLabel)}` : '');
-
-    var progressHtml = '';
+    // Hero: the appliance next to its state (and progress while a program runs).
+    var big = '';
     if (running || state === 'finished') {
       var pct = state === 'finished' ? 100 : (progress == null ? 0 : progress);
-      progressHtml = '<div class="progress"><div class="bar"><div class="fill" style="width:' + pct + '%"></div></div>' +
-        '<div class="progress-info"><span class="pct">' + Math.round(pct) + ' %</span><span>' + hcEsc(timeLine) + '</span></div></div>';
+      big = '<div class="big"><span class="pct">' + Math.round(pct) + '<small> %</small></span><span class="state">' + hcEsc(statusText) + '</span></div>' +
+        '<div class="bar"><div class="fill" style="width:' + pct + '%"></div></div>' +
+        (timeLine ? `<div class="time">${hcEsc(timeLine)}</div>` : '');
+    } else {
+      big = `<div class="big"><span class="state-big">${hcEsc(statusText)}</span></div>`;
+    }
+    var art = c.icon
+      ? `<div class="badge"><ha-icon icon="${hcEsc(icon)}"></ha-icon></div>`
+      : (HC_ART[this.constructor.kind] || HC_ART.dishwasher);
+    var heroHtml = '<div class="hero">' + hcPicture(art, state, !c.icon) +
+      '<div class="info">' + big + (chips.length ? `<div class="chips">${chips.join('')}</div>` : '') + '</div></div>';
+
+    var logo = c.show_logo === false ? ''
+      : `<a class="logo-link" href="${HC_SITE}" target="_blank" rel="noopener noreferrer" title="Home Connect">${HC_LOGO}</a>`;
+    var sub = progLabel || this._t(this.constructor.kind);
+
+    if (this._compact()) {
+      this.shadowRoot.innerHTML = this._miniHtml({ c, ent, name, color, state, statusText, running, online, powerOn, progress,
+        finish, progLabel, chips: chips.filter((x) => x.indexOf('chip warn') >= 0 || !online), art, logo, powerBtn });
+      return;
     }
 
     this.shadowRoot.innerHTML = this._styles(color) + '<ha-card>' +
-      '<div class="header">' +
-        '<div class="badge' + (state === 'run' ? ' running' : '') + '"><ha-icon icon="' + hcEsc(icon) + '"></ha-icon></div>' +
-        '<div class="titles"><div class="name"><span>' + hcEsc(name) + '</span>' + HC_LOGO + '</div><div class="status">' + subtitle + '</div></div>' +
-        powerBtn +
+      '<div class="header">' + logo +
+        '<div class="titles"><div class="name">' + hcEsc(name) + '</div><div class="sub">' + hcEsc(sub) + '</div></div>' +
+        powerBtn + this._zoomButton() +
       '</div>' +
-      (chips.length ? `<div class="chips">${chips.join('')}</div>` : '') +
-      progressHtml + programHtml + optionsHtml + errorHtml + controls +
+      heroHtml + programHtml + optionsHtml + errorHtml + controls +
     '</ha-card>';
   }
 
@@ -617,16 +712,70 @@ class HomeConnectBaseCard extends HTMLElement {
       'ha-card { height: 100%; box-sizing: border-box; padding: 12px; display: flex; flex-direction: column; gap: 10px; }' +
       '.empty { display: flex; align-items: center; gap: 10px; color: var(--secondary-text-color); }' +
       '.header { display: flex; align-items: center; gap: 10px; }' +
-      '.badge { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;' +
-        ' background: color-mix(in srgb, var(--hc-color) 15%, transparent); color: var(--hc-color); }' +
-      '.badge ha-icon { --mdc-icon-size: 24px; }' +
-      '.badge.running ha-icon { animation: hc-pulse 2s ease-in-out infinite; }' +
-      '@keyframes hc-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.88); opacity: 0.7; } }' +
+      '.logo-link { display: flex; flex-shrink: 0; }' +
+      '.logo { width: 40px; height: 40px; }' +
       '.titles { flex: 1; min-width: 0; }' +
-      '.name { display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 500; line-height: 1.25; color: var(--primary-text-color); }' +
-      '.name span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }' +
-      '.name .logo { width: 18px; height: 18px; flex-shrink: 0; }' +
-      '.status { font-size: 12px; color: var(--hc-color); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }' +
+      '.name { font-size: 16px; font-weight: 500; line-height: 1.25; color: var(--primary-text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }' +
+      '.sub { font-size: 12px; color: var(--secondary-text-color); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }' +
+      '.hero { display: flex; align-items: center; gap: 14px; }' +
+      '.picture { width: 72px; height: 84px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }' +
+      '.picture svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }' +
+      '.picture .led { fill: var(--hc-color); }' +
+      '.picture { position: relative; }' +
+      '.pbadge { position: absolute; right: -4px; bottom: 2px; width: 30%; aspect-ratio: 1; min-width: 20px; border-radius: 50%; display: grid; place-items: center;' +
+        ' background: var(--hc-color); fill: #fff; box-shadow: 0 0 0 2px var(--card-background-color, #fff), 0 2px 6px rgba(0,0,0,0.25);' +
+        ' animation: hc-pop 0.35s cubic-bezier(.3,1.6,.6,1) both; }' +
+      '.pbadge svg { width: 72%; height: 72%; filter: none; overflow: visible; }' +
+      '.st-pause .pbadge { animation: hc-pop 0.35s cubic-bezier(.3,1.6,.6,1) both, hc-breathe 2s ease-in-out 0.4s infinite; }' +
+      '.pbadge .hand-h, .pbadge .hand-m { transform-box: view-box; transform-origin: 12px 12px; }' +
+      '.st-delayedstart .pbadge .hand-m { animation: hc-spin 3s linear infinite; }' +
+      '.st-delayedstart .pbadge .hand-h { animation: hc-spin 36s linear infinite; }' +
+      '.pbadge .check { stroke-dasharray: 20; stroke-dashoffset: 0; animation: hc-draw 0.5s ease-out 0.2s both; }' +
+      '.picture .sparkles { position: absolute; inset: 0; width: 100%; height: 100%; fill: var(--hc-color); pointer-events: none; filter: none; }' +
+      '.sparkles path { transform-box: fill-box; transform-origin: center; animation: hc-twinkle 1.8s ease-in-out infinite; }' +
+      '.sparkles path:nth-child(2) { animation-delay: 0.6s; } .sparkles path:nth-child(3) { animation-delay: 1.2s; }' +
+      '.st-pause svg:not(.sparkles):first-child, .st-delayedstart svg:first-child { opacity: 0.85; }' +
+      '@keyframes hc-pop { from { transform: scale(0); } to { transform: scale(1); } }' +
+      '@keyframes hc-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.88); } }' +
+      '@keyframes hc-draw { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }' +
+      '@keyframes hc-twinkle { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }' +
+      '.picture .floor { opacity: 0; transition: opacity 0.6s; } .picture .floor-c { stop-color: var(--hc-color); }' +
+      '.picture.running .floor { opacity: 1; }' +
+      '.picture .drum, .picture .wave { transform-box: view-box; }' +
+      '.picture .drum { transform-origin: 40px 55px; }' +
+      '.picture .shake, .picture .steam path, .picture .drops, .picture .bubbles { transform-box: view-box; }' +
+      '.picture .shake { transform-origin: 40px 92px; }' +
+      '.picture .steam path, .picture .drops, .picture .bubbles { opacity: 0; }' +
+      '.picture .bubbles { fill: #fff; }' +
+      '.picture.running .drum { animation: hc-spin 1.2s linear infinite; }' +
+      '.picture.running .wave { animation: hc-wave 0.8s ease-in-out infinite alternate; }' +
+      '.picture.running .shake { animation: hc-shake 0.3s ease-in-out infinite; }' +
+      '.picture.running .bubbles { animation: hc-rise 1.6s ease-in infinite; }' +
+      '.picture.running .led { animation: hc-blink 1.6s ease-in-out infinite; }' +
+      '.picture.running .floor { animation: hc-glow 2.2s ease-in-out infinite alternate; }' +
+      '.picture.running .steam path { animation: hc-steam 2.4s ease-out infinite; }' +
+      '.picture.running .steam path:nth-child(2) { animation-delay: 0.8s; }' +
+      '.picture.running .steam path:nth-child(3) { animation-delay: 1.6s; }' +
+      '.picture.running .drops { animation: hc-spray 1.1s ease-in-out infinite; }' +
+      '@keyframes hc-spin { to { transform: rotate(360deg); } }' +
+      '@keyframes hc-wave { from { transform: translateX(-6px); } to { transform: translateX(6px); } }' +
+      '@keyframes hc-shake { 0%, 100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-0.6px) rotate(-0.5deg); } 75% { transform: translateX(0.6px) rotate(0.5deg); } }' +
+      '@keyframes hc-rise { 0% { opacity: 0; transform: translateY(4px); } 30% { opacity: 0.8; } 100% { opacity: 0; transform: translateY(-14px); } }' +
+      '@keyframes hc-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }' +
+      '@keyframes hc-glow { from { opacity: 0.45; } to { opacity: 1; } }' +
+      '@keyframes hc-steam { 0% { opacity: 0; transform: translateY(2px); } 30% { opacity: 0.7; } 100% { opacity: 0; transform: translateY(-10px); } }' +
+      '@keyframes hc-spray { 0%, 100% { opacity: 0; transform: translateY(6px); } 40% { opacity: 0.85; } 70% { opacity: 0.5; transform: translateY(-4px); } }' +
+      '@media (prefers-reduced-motion: reduce) { .picture.running *, .pbadge, .pbadge *, .sparkles path { animation: none !important; } .sparkles path { opacity: 1; } .picture.running .floor { opacity: 1; } }' +
+      '.badge { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;' +
+        ' background: color-mix(in srgb, var(--hc-color) 15%, transparent); color: var(--hc-color); }' +
+      '.badge ha-icon { --mdc-icon-size: 32px; }' +
+      '.info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }' +
+      '.big { display: flex; align-items: baseline; gap: 8px; min-width: 0; }' +
+      '.big .pct { font-size: 30px; font-weight: 400; line-height: 1.1; color: var(--primary-text-color); }' +
+      '.big .pct small { font-size: 15px; color: var(--secondary-text-color); }' +
+      '.big .state { font-size: 13px; font-weight: 500; color: var(--hc-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }' +
+      '.state-big { font-size: 22px; font-weight: 400; line-height: 1.2; color: var(--hc-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }' +
+      '.time { font-size: 12px; color: var(--secondary-text-color); }' +
       'button { font: inherit; cursor: pointer; border: none; }' +
       'button:disabled { cursor: default; opacity: 0.5; }' +
       '.power { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;' +
@@ -637,11 +786,8 @@ class HomeConnectBaseCard extends HTMLElement {
         ' background: var(--secondary-background-color, rgba(128,128,128,0.12)); color: var(--secondary-text-color); }' +
       '.chip ha-icon { --mdc-icon-size: 13px; }' +
       '.chip.warn { background: color-mix(in srgb, var(--warning-color, #ffa600) 15%, transparent); color: var(--warning-color, #ffa600); }' +
-      '.progress { display: flex; flex-direction: column; gap: 4px; }' +
       '.bar { height: 4px; border-radius: 3px; background: var(--secondary-background-color, rgba(128,128,128,0.15)); overflow: hidden; }' +
       '.fill { height: 100%; border-radius: 3px; background: var(--hc-color); transition: width 0.6s ease; }' +
-      '.progress-info { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--secondary-text-color); }' +
-      '.pct { font-weight: 500; color: var(--primary-text-color); }' +
       '.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }' +
       '.field > span { font-size: 11px; color: var(--secondary-text-color); }' +
       '.prog { font-size: 13px; font-weight: 500; color: var(--primary-text-color); padding: 6px 10px; border-radius: 10px;' +
@@ -674,6 +820,29 @@ class HomeConnectBaseCard extends HTMLElement {
       '.hint ha-icon { --mdc-icon-size: 16px; }' +
       '.error { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--error-color, #db4437); }' +
       '.error ha-icon { --mdc-icon-size: 16px; flex-shrink: 0; }' +
+      '.zoom { all: unset; flex-shrink: 0; cursor: pointer; width: 24px; height: 24px; margin: -4px -4px -4px 0; border-radius: 50%;' +
+        ' display: grid; place-items: center; color: var(--secondary-text-color); }' +
+      '.zoom ha-icon { --mdc-icon-size: 16px; }' +
+      '.zoom:hover { background: color-mix(in srgb, var(--secondary-text-color) 16%, transparent); color: var(--primary-text-color); }' +
+      '.zoom:focus-visible { outline: 2px solid var(--primary-color, #03a9f4); outline-offset: 1px; }' +
+      'ha-card.mini .logo { width: 32px; height: 32px; }' +
+      '.st { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; padding: 1px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;' +
+        ' white-space: nowrap; background: color-mix(in srgb, var(--hc-color) 15%, transparent); color: var(--hc-color); }' +
+      '.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hc-color); }' +
+      '.content { display: flex; align-items: center; gap: 12px; }' +
+      'ha-card.mini .picture { width: 56px; height: 66px; }' +
+      '.mbar { display: flex; align-items: center; gap: 8px; font-size: 13px; }' +
+      '.mbar .bar { flex: 1; }' +
+      '.mbar .v { font-weight: 500; min-width: 40px; text-align: right; color: var(--primary-text-color); }' +
+      '.line { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--secondary-text-color); min-width: 0; }' +
+      '.line ha-icon { --mdc-icon-size: 14px; flex-shrink: 0; }' +
+      '.line span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }' +
+      '.mcontrols { display: flex; gap: 6px; flex-shrink: 0; }' +
+      '.round { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;' +
+        ' background: var(--secondary-background-color, rgba(128,128,128,0.12)); color: var(--primary-text-color); }' +
+      '.round ha-icon { --mdc-icon-size: 20px; }' +
+      '.round.primary { background: var(--primary-color, #03a9f4); color: var(--text-primary-color, #fff); }' +
+      'ha-card.mini .power { width: 40px; height: 40px; }' +
     '</style>';
   }
 
@@ -686,6 +855,9 @@ class HomeConnectBaseCard extends HTMLElement {
       return;
     }
     switch (btn.dataset.action) {
+      case 'zoom':
+        this._toggleZoom(ev);
+        break;
       case 'power':
         this._power();
         break;
@@ -827,8 +999,120 @@ class HomeConnectWasherCard extends HomeConnectBaseCard {
   static get kind() { return 'washer'; }
 }
 
+// ── Mini cards ───────────────────────────────────────────────────────────────
+// A mini card is a full card drawn compact, like ha-roborock-card: its detail button (top right, `zoom: false`
+// removes it) switches it to the full card and back, and a click anywhere else on the page folds it again.
+var hcInDialog = (ev) => ev.composedPath().some((n) => ['ha-more-info-dialog', 'ha-dialog', 'dialog'].indexOf(n.localName) >= 0);
+
+var hcMini = (Base) => class extends Base {
+  static get mini() { return true; }
+
+  static getConfigElement() {
+    var el = Base.getConfigElement();
+    el.mini = true;
+    return el;
+  }
+
+  constructor() {
+    super();
+    this._onUnzoom = (ev) => {
+      if (this._zoomed && !ev.composedPath().includes(this) && !hcInDialog(ev)) this._setZoom(false);
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    document.addEventListener('click', this._onUnzoom, true);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('click', this._onUnzoom, true);
+  }
+
+  getCardSize() { return this._zoomed ? super.getCardSize() : 2; }
+
+  getGridOptions() { return this._zoomed ? super.getGridOptions() : { columns: 6, min_columns: 6 }; }
+
+  _compact() { return !this._zoomed; }
+
+  _zoomButton() {
+    if (this._config.zoom === false) return '';
+    var z = !!this._zoomed;
+    var label = hcEsc(this._t(z ? 'zoom_out' : 'zoom_in'));
+    return `<button class="zoom" data-action="zoom" title="${label}" aria-label="${label}"><ha-icon icon="${z ? 'mdi:arrow-collapse' : 'mdi:arrow-expand'}"></ha-icon></button>`;
+  }
+
+  _setZoom(on) {
+    this._zoomed = on;
+    this._update();
+  }
+
+  // From the keyboard (Enter / Space: no click count), the focus follows to the button that replaced this one.
+  _toggleZoom(ev) {
+    this._setZoom(!this._zoomed);
+    if (ev.detail === 0) this.shadowRoot.querySelector('.zoom')?.focus();
+  }
+
+  _miniHtml(m) {
+    var c = m.c, ent = m.ent, lines = [];
+    var bar = '';
+    if (m.running || m.state === 'finished') {
+      var pct = m.state === 'finished' ? 100 : (m.progress == null ? 0 : m.progress);
+      bar = '<div class="mbar"><div class="bar"><div class="fill" style="width:' + pct + '%"></div></div><span class="v">' + Math.round(pct) + ' %</span></div>';
+    }
+    if (m.progLabel && m.online && m.powerOn) lines.push(`<div class="line"><ha-icon icon="mdi:tune-variant"></ha-icon><span>${hcEsc(m.progLabel)}</span></div>`);
+    if (m.running && m.finish) {
+      var mins = Math.max(0, Math.round((m.finish.getTime() - Date.now()) / 60000));
+      var h = Math.floor(mins / 60), mm = mins % 60;
+      var left = h ? `${h} h ${String(mm).padStart(2, '0')}` : `${mm} min`;
+      var at = m.finish.toLocaleTimeString(this._lang(), { hour: '2-digit', minute: '2-digit' });
+      lines.push(`<div class="line"><ha-icon icon="mdi:clock-outline"></ha-icon><span>${this._t('ends_at')} ${at} · ${this._t('remaining').replace('{t}', left)}</span></div>`);
+    }
+    if (m.chips.length) lines.push(`<div class="chips">${m.chips.join('')}</div>`);
+
+    // Round buttons: start (or pause / resume) and power.
+    var btns = [];
+    if (c.show_controls && m.online && m.powerOn) {
+      var remoteOk = !ent.remote_start || this._val(ent.remote_start) === 'on';
+      if (!m.running && ent.active_program && this._avail(ent.selected_program)) {
+        var off = !remoteOk || this._starting || this._reloading;
+        var title = hcEsc(this._t(remoteOk ? 'start' : 'remote_start_off'));
+        btns.push(`<button class="round primary" data-action="start" title="${title}" aria-label="${hcEsc(this._t('start'))}"${off ? ' disabled' : ''}><ha-icon icon="mdi:play"></ha-icon></button>`);
+      }
+      var pauseVal = this._val(ent.pause);
+      if (m.state === 'run' && ent.pause && pauseVal !== undefined && pauseVal !== 'unavailable') {
+        btns.push(`<button class="round" data-action="pause" title="${hcEsc(this._t('pause'))}" aria-label="${hcEsc(this._t('pause'))}"><ha-icon icon="mdi:pause"></ha-icon></button>`);
+      }
+      if (m.state === 'pause' && ent.resume && this._val(ent.resume) !== 'unavailable') {
+        btns.push(`<button class="round primary" data-action="resume" title="${hcEsc(this._t('resume'))}" aria-label="${hcEsc(this._t('resume'))}"><ha-icon icon="mdi:play"></ha-icon></button>`);
+      }
+    }
+    if (m.powerBtn) btns.push(m.powerBtn);
+
+    var errorHtml = this._error
+      ? `<div class="error" role="alert" title="${hcEsc(this._error.detail)}"><ha-icon icon="mdi:alert-circle-outline"></ha-icon><span>${hcEsc(this._t(this._error.key))}</span></div>`
+      : '';
+
+    return this._styles(m.color) + '<ha-card class="mini">' +
+      '<div class="header">' + m.logo +
+        '<div class="titles"><div class="name">' + hcEsc(m.name) + '</div></div>' +
+        `<span class="st"><span class="dot"></span>${hcEsc(m.statusText)}</span>` + this._zoomButton() +
+      '</div>' +
+      '<div class="content">' + hcPicture(m.art, m.state, !c.icon) +
+        '<div class="info">' + bar + lines.join('') + '</div>' +
+        (btns.length ? `<div class="mcontrols">${btns.join('')}</div>` : '') +
+      '</div>' + errorHtml +
+    '</ha-card>';
+  }
+};
+
+class HomeConnectDishwasherMiniCard extends hcMini(HomeConnectDishwasherCard) {}
+
+class HomeConnectWasherMiniCard extends hcMini(HomeConnectWasherCard) {}
+
 // ── home-connect-card-editor (visual editor, built on HA's ha-form) ──────────
-var HC_EDITOR_DEFAULTS = { show_program: true, show_controls: true, show_options: true, show_alerts: true };
+var HC_EDITOR_DEFAULTS = { show_program: true, show_controls: true, show_options: true, show_alerts: true, show_power: true, show_logo: true, zoom: true };
 
 class HomeConnectCardEditor extends HTMLElement {
   setConfig(config) {
@@ -853,7 +1137,7 @@ class HomeConnectCardEditor extends HTMLElement {
 
   _schema() {
     var t = (k) => hcT(this._lang(), k);
-    var kind = this.kind || (this._config.type === 'custom:home-connect-washer-card' ? 'washer' : 'dishwasher');
+    var kind = this.kind || (/washer-/.test(this._config.type || '') ? 'washer' : 'dishwasher');
     var domains = { operation_state: 'sensor', door: 'sensor', progress: 'sensor', finish_time: 'sensor',
       selected_program: 'select', active_program: 'select', power: 'switch', stop: 'button',
       pause: 'button', resume: 'button', remote_start: 'binary_sensor', remote_control: 'binary_sensor', connectivity: 'binary_sensor',
@@ -875,7 +1159,9 @@ class HomeConnectCardEditor extends HTMLElement {
           { name: 'show_controls', selector: { boolean: {} } },
           { name: 'show_options', selector: { boolean: {} } },
           { name: 'show_alerts', selector: { boolean: {} } },
-        ],
+          { name: 'show_power', selector: { boolean: {} } },
+          { name: 'show_logo', selector: { boolean: {} } },
+        ].concat(this.mini || /-mini-card$/.test(this._config.type || '') ? [{ name: 'zoom', selector: { boolean: {} } }] : []),
       },
       {
         name: 'language',
@@ -959,5 +1245,14 @@ if (!customElements.get('home-connect-washer-card')) {
     documentationURL: 'https://github.com/juju35/ha-home-connect-card',
   });
 }
+
+[
+  ['home-connect-dishwasher-mini-card', HomeConnectDishwasherMiniCard, 'Home Connect Dishwasher Mini Card', 'Compact dishwasher card that unfolds into the full card'],
+  ['home-connect-washer-mini-card', HomeConnectWasherMiniCard, 'Home Connect Washer Mini Card', 'Compact washing machine card that unfolds into the full card'],
+].forEach(([type, cls, name, description]) => {
+  if (customElements.get(type)) return;
+  customElements.define(type, cls);
+  window.customCards.push({ type, name, description, preview: true, documentationURL: 'https://github.com/juju35/ha-home-connect-card' });
+});
 
 console.info(`%c HOME-CONNECT-CARD %c v${HOME_CONNECT_CARD_VERSION} `, 'color:#fff;background:#1e88e5;font-weight:700', 'color:#1e88e5;background:#fff');

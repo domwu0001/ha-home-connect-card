@@ -18,7 +18,7 @@ Pick the appliance, the card finds all its entities by itself.
 
 ## Features
 
-- Two cards: `home-connect-dishwasher-card` and `home-connect-washer-card`
+- Two cards: `home-connect-dishwasher-card` and `home-connect-washer-card`, plus their mini versions `home-connect-dishwasher-mini-card` and `home-connect-washer-mini-card` (compact, a detail button unfolds the full card)
 - Automatic entity discovery from the Home Connect device (works with English or French entity IDs), each entity can be overridden
 - Status with color, progress bar, finish time and time left
 - Program picker and **Start** button (when remote start is enabled on the appliance), **Pause / Resume** for washers, **Stop** with a confirmation tap
@@ -78,6 +78,14 @@ type: custom:home-connect-washer-card
 entity: sensor.washing_machine_operation_state
 ```
 
+### Mini cards
+
+```yaml
+type: custom:home-connect-washer-mini-card
+```
+
+The mini card shows the appliance, its state, the program, the progress and finish time, the alerts, and round Start / Pause / Resume and power buttons. The detail button (top right) unfolds the full card with every option; a click anywhere else on the page folds it back. It takes the same options as the full card, which apply once unfolded, plus `zoom`.
+
 Use either `device_id` (what the visual editor writes) or `entity` (any entity of the appliance). With neither, the card uses the first dishwasher / washing machine it finds.
 
 ### Full options
@@ -86,11 +94,12 @@ Use either `device_id` (what the visual editor writes) or `entity` (any entity o
 type: custom:home-connect-washer-card
 device_id: 5c3a4c7f80e0aa935477ebca6e7b915b
 name: Washing machine
-icon: mdi:washing-machine
 show_program: true
 show_options: true
 show_controls: true
 show_alerts: true
+show_power: true
+show_logo: true
 language: en
 entities:
   operation_state: sensor.washing_machine_operation_state
@@ -105,11 +114,14 @@ entities:
 | `device_id` | ❌* | Auto | Home Connect device (*or `entity`; the first matching appliance is used if both are missing) |
 | `entity` | ❌ | — | Any entity of the appliance, used to find the device |
 | `name` | ❌ | Device name | Card title |
-| `icon` | ❌ | `mdi:dishwasher` / `mdi:washing-machine` | Card icon |
+| `icon` | ❌ | Illustration | Replaces the appliance illustration with an icon |
 | `show_program` | ❌ | `true` | Show the program picker |
 | `show_options` | ❌ | `true` | Show program options (only before a program starts) |
 | `show_controls` | ❌ | `true` | Show Start / Pause / Resume / Stop buttons |
 | `show_alerts` | ❌ | `true` | Show salt and rinse aid alerts |
+| `show_power` | ❌ | `true` | Show the power button (turn off for appliances that can't be switched on / off remotely) |
+| `show_logo` | ❌ | `true` | Show the Home Connect logo in the header |
+| `zoom` | ❌ | `true` | Mini cards only: detail button at the top right that unfolds the full card (a click elsewhere folds it back) |
 | `language` | ❌ | Auto | Force language: `fr` or `en` (auto-detects from HA settings) |
 | `entities` | ❌ | Auto | Override detected entities (see below) |
 
@@ -141,7 +153,9 @@ Every other `switch` and `select` of the device is shown as a program option.
 |---|---|
 | ![dishwasher](screenshots/dishwasher.png) | ![washer](screenshots/washer.png) |
 | ![dishwasher dark](screenshots/dishwasher-dark.png) | ![washer dark](screenshots/washer-dark.png) |
-| ![dishwasher with program options](screenshots/dishwasher-options.png) | |
+| ![dishwasher with program options](screenshots/dishwasher-options.png) | ![washer mini card unfolded](screenshots/washer-mini-zoom.png) |
+| ![dishwasher mini card](screenshots/dishwasher-mini.png) | ![washer mini card](screenshots/washer-mini.png) |
+| ![dishwasher mini card dark](screenshots/dishwasher-mini-dark.png) | |
 
 Dark screenshots are in French.
 
