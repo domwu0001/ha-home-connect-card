@@ -149,6 +149,20 @@ Every other `switch` and `select` of the device is shown as a program option.
 
 ## Screenshots
 
+While a program runs the illustration comes alive, and each appliance animates differently (the card honours `prefers-reduced-motion` and falls back to a still image).
+
+A dishwasher mid-cycle sprays water across the tub, lets steam curl off the top and glows a pool of light on the floor while its status light blinks and the progress bar fills:
+
+![dishwasher running](screenshots/dishwasher-running.gif)
+
+A washing machine mid-cycle turns its drum, sloshes the water behind the porthole and lifts a few suds as the whole body gently shakes:
+
+![washing machine running](screenshots/washer-running.gif)
+
+When a cycle finishes the motion stops, a tick is drawn into the badge and sparkles twinkle around the appliance:
+
+![dishwasher finished](screenshots/dishwasher-finished.gif)
+
 | Dishwasher | Washing machine |
 |---|---|
 | ![dishwasher](screenshots/dishwasher.png) | ![washer](screenshots/washer.png) |
@@ -156,6 +170,12 @@ Every other `switch` and `select` of the device is shown as a program option.
 | ![dishwasher with program options](screenshots/dishwasher-options.png) | ![washer mini card unfolded](screenshots/washer-mini-zoom.png) |
 | ![dishwasher mini card](screenshots/dishwasher-mini.png) | ![washer mini card](screenshots/washer-mini.png) |
 | ![dishwasher mini card dark](screenshots/dishwasher-mini-dark.png) | |
+
+Door open — the dishwasher's door lowered on its racks, the washing machine's porthole swung aside:
+
+| Dishwasher | Washing machine |
+|---|---|
+| ![dishwasher door open](screenshots/dishwasher-open.png) | ![washer door open](screenshots/washer-open.png) |
 
 Dark screenshots are in French.
 
@@ -175,7 +195,7 @@ Some appliances can't be turned off remotely: after a first refusal, the card sa
 npm install
 npm run build        # stamps the version of package.json into dist/home-connect-card.js
 npm run check        # builds and checks the card (run in CI)
-npm run screenshots  # renders the cards with mock Home Connect devices into screenshots/
+npm run screenshots  # renders the cards (and the animation GIFs, needs ffmpeg) with mock devices into screenshots/
 ```
 
 `dist/` is not committed: `npm run build` creates it locally, CI builds it on every push, and the release workflow attaches the built file to the release, which is where HACS downloads it from.

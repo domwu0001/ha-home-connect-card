@@ -1,8 +1,11 @@
 // Renders the card with mock data and saves the README screenshots.
 // Usage: npm run build && npm run screenshots
-import { chromium } from "playwright";
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { chromium } from "playwright";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 // Fixed clock and time zone: "Ends at …" in the captures does not depend on when they are taken.
@@ -65,29 +68,34 @@ const pageHtml = (theme, width) => `<!doctype html><html><head><meta charset="ut
          font-family: Roboto, "Segoe UI", Helvetica, Arial, sans-serif; width: ${width}px; }
 </style></head><body><div id="root"></div></body></html>`;
 
+// Opens one shot { file, type, theme, width, config, hass? } on a fresh page (re-running the scripts in the same
+// realm would redeclare their globals) and mounts the card. extra: more stand-in elements, as script source.
+async function openCard(browser, s, { icons = {}, hass = {}, extra = "" }) {
+  const page = await browser.newPage({ deviceScaleFactor: 2, viewport: { width: 1000, height: 2000 }, timezoneId: "UTC" });
+  page.on("pageerror", (err) => console.error(`${s.file}: ${err.message}`));
+  page.on("console", (msg) => msg.type() === "error" && console.error(`${s.file}: ${msg.text()}`));
+  await page.clock.setFixedTime(NOW);
+  await page.setContent(pageHtml(s.theme, s.width));
+  await page.addScriptTag({ content: haElements(icons) + extra });
+  await page.addScriptTag({ content: cardJs });
+  await page.evaluate(
+    ({ type, config, hass, dark }) => {
+      const el = document.createElement(type);
+      el.setConfig({ type: `custom:${type}`, ...config });
+      el.hass = { states: {}, entities: {}, devices: {}, language: "en", locale: { language: "en" },
+                  themes: { darkMode: dark }, callService: async () => {}, callWS: async () => ({}), ...hass };
+      document.getElementById("root").appendChild(el);
+    },
+    { type: s.type, config: s.config || {}, hass: { ...hass, ...(s.hass || {}) }, dark: s.theme === "dark" }
+  );
+  return page;
+}
+
 // Renders each shot { file, type, theme, width, config, hass?, after? } into screenshots/<file>.png.
-// extra: more stand-in elements, as script source.
 export async function render(shots, { icons = {}, hass = {}, extra = "" } = {}) {
   const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
-  // A fresh page per shot: re-running the scripts in the same realm would redeclare their globals.
   for (const s of shots) {
-    const page = await browser.newPage({ deviceScaleFactor: 2, viewport: { width: 1000, height: 2000 }, timezoneId: "UTC" });
-    page.on("pageerror", (err) => console.error(`${s.file}: ${err.message}`));
-    page.on("console", (msg) => msg.type() === "error" && console.error(`${s.file}: ${msg.text()}`));
-    await page.clock.setFixedTime(NOW);
-    await page.setContent(pageHtml(s.theme, s.width));
-    await page.addScriptTag({ content: haElements(icons) + extra });
-    await page.addScriptTag({ content: cardJs });
-    await page.evaluate(
-      ({ type, config, hass, dark }) => {
-        const el = document.createElement(type);
-        el.setConfig({ type: `custom:${type}`, ...config });
-        el.hass = { states: {}, entities: {}, devices: {}, language: "en", locale: { language: "en" },
-                    themes: { darkMode: dark }, callService: async () => {}, callWS: async () => ({}), ...hass };
-        document.getElementById("root").appendChild(el);
-      },
-      { type: s.type, config: s.config || {}, hass: { ...hass, ...(s.hass || {}) }, dark: s.theme === "dark" }
-    );
+    const page = await openCard(browser, s, { icons, hass, extra });
     if (s.after) await s.after(page);
     await page.waitForTimeout(400);
     // The card plus the 16px page padding around it, on the theme background.
@@ -101,6 +109,37 @@ export async function render(shots, { icons = {}, hass = {}, extra = "" } = {}) 
     await page.close();
   }
   await browser.close();
+}
+
+// Records one shot as a looping GIF (screenshots/<file>.gif) — needs ffmpeg on PATH. Every animation is paused and
+// stepped frame by frame, so the GIF is identical whatever the machine's speed.
+export async function animate(shot, { icons = {}, hass = {}, extra = "", fps = 20, seconds = 3 } = {}) {
+  const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+  const page = await openCard(browser, shot, { icons, hass, extra });
+  await page.waitForTimeout(300);
+  const box = await page.locator("#root").boundingBox();
+  const clip = { x: 0, y: 0, width: shot.width + 32, height: Math.ceil(box.height) + 32 };
+  const dir = mkdtempSync(join(tmpdir(), "hc-frames-"));
+  const frames = Math.round(fps * seconds);
+  for (let i = 0; i < frames; i++) {
+    await page.evaluate((t) => {
+      for (const a of document.getAnimations()) {
+        a.pause();
+        a.currentTime = t;
+      }
+    }, (i * 1000) / fps);
+    await page.screenshot({ path: join(dir, `f${String(i).padStart(3, "0")}.png`), clip });
+  }
+  await browser.close();
+  const out = `${root}screenshots/${shot.file}.gif`;
+  // Halve the retina capture and build a per-clip palette: the colours stay clean and the file stays small.
+  execFileSync("ffmpeg", [
+    "-y", "-loglevel", "error", "-framerate", String(fps), "-i", join(dir, "f%03d.png"),
+    "-vf", `scale=${clip.width}:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=bayer:bayer_scale=4`,
+    "-loop", "0", out,
+  ]);
+  rmSync(dir, { recursive: true });
+  console.log(`screenshots/${shot.file}.gif`);
 }
 
 const icons = {
@@ -166,6 +205,8 @@ add("wm", "switch.washer_prewash", "prewash", "off", { friendly_name: "Washer Pr
 add("wm", "switch.washer_speed_perfect", "speed_perfect", "on", { friendly_name: "Washer SpeedPerfect" });
 add("wm", "binary_sensor.washer_connectivity", "connectivity", "on", { device_class: "connectivity" });
 add("wm", "button.washer_start_program", "start_program", "unknown");
+add("wm", "sensor.washer_program_progress", "program_progress", "unavailable", { unit_of_measurement: "%" });
+add("wm", "sensor.washer_program_finish_time", "program_finish_time", "unavailable", { device_class: "timestamp" });
 
 const devices = { dw: { id: "dw", name: "Dishwasher" }, wm: { id: "wm", name: "Washer" } };
 const hass = { states, entities, devices };
@@ -176,13 +217,32 @@ ready["sensor.dishwasher_operation_state"].state = "ready";
 ready["select.dishwasher_active_program"].state = "unavailable";
 ready["sensor.dishwasher_program_progress"].state = "unavailable";
 
+// Washing machine mid-cycle: the drum turns, water waves behind the porthole and suds rise.
+const washerRunning = structuredClone(states);
+washerRunning["sensor.washer_operation_state"].state = "run";
+washerRunning["sensor.washer_program_progress"].state = "45";
+washerRunning["sensor.washer_program_finish_time"].state = inMinutes(72);
+
+// Dishwasher at the end of its cycle: the tick is drawn in and sparkles twinkle around it.
+const finished = structuredClone(states);
+finished["sensor.dishwasher_operation_state"].state = "finished";
+
+// Each appliance idle with its door open: the dishwasher's door lowered on its racks, the washer's porthole swung aside.
+const dishwasherOpen = structuredClone(states);
+dishwasherOpen["sensor.dishwasher_operation_state"].state = "ready";
+dishwasherOpen["sensor.dishwasher_door"].state = "open";
+const washerOpen = structuredClone(states);
+washerOpen["sensor.washer_door"].state = "open";
+
 await render(
   [
     { file: "dishwasher", type: "home-connect-dishwasher-card", theme: "light", width: 460, config: {} },
     { file: "dishwasher-dark", type: "home-connect-dishwasher-card", theme: "dark", width: 460, config: {} },
     { file: "dishwasher-options", type: "home-connect-dishwasher-card", theme: "light", width: 460, config: {}, hass: { states: ready } },
+    { file: "dishwasher-open", type: "home-connect-dishwasher-card", theme: "light", width: 460, config: {}, hass: { states: dishwasherOpen } },
     { file: "washer", type: "home-connect-washer-card", theme: "light", width: 460, config: {} },
     { file: "washer-dark", type: "home-connect-washer-card", theme: "dark", width: 460, config: {} },
+    { file: "washer-open", type: "home-connect-washer-card", theme: "light", width: 460, config: {}, hass: { states: washerOpen } },
     { file: "dishwasher-mini", type: "home-connect-dishwasher-mini-card", theme: "light", width: 380, config: {} },
     { file: "dishwasher-mini-dark", type: "home-connect-dishwasher-mini-card", theme: "dark", width: 380, config: {} },
     { file: "washer-mini", type: "home-connect-washer-mini-card", theme: "light", width: 380, config: {} },
@@ -194,5 +254,22 @@ await render(
       },
     },
   ],
+  { icons, hass }
+);
+
+// One looping GIF per distinct animated state. The dishwasher mid-cycle (its default mock state is
+// "run") sprays water, raises steam and glows its floor light; the washer running turns the drum and
+// waves the water; the finished dishwasher draws its tick and twinkles sparkles. Each reuses openCard
+// through animate(), so no mount is duplicated.
+await animate(
+  { file: "dishwasher-running", type: "home-connect-dishwasher-card", theme: "light", width: 460, config: {} },
+  { icons, hass }
+);
+await animate(
+  { file: "washer-running", type: "home-connect-washer-card", theme: "light", width: 460, config: {}, hass: { states: washerRunning } },
+  { icons, hass }
+);
+await animate(
+  { file: "dishwasher-finished", type: "home-connect-dishwasher-card", theme: "light", width: 460, config: {}, hass: { states: finished } },
   { icons, hass }
 );
