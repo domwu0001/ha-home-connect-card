@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.1 - 2026-10-28
+### Changes
+- Added german language
+
 ## 1.8.0 - 2026-10-26
 ### Changes
 - The mini card's progress bar is now built with a template literal instead of string concatenation, matching the rest of the file. No change to the rendered output or behavior.
