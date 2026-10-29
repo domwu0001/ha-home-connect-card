@@ -167,7 +167,7 @@ var HcI18n = {
     washer: 'Waschmaschine',
     st_inactive: 'Inaktiv',
     st_ready: 'Bereit',
-    st_delayedstart: 'Zeitverzögerter Start',
+    st_delayedstart: 'Verzögerter Start',
     st_run: 'Läuft',
     st_pause: 'Pausiert',
     st_actionrequired: 'Aktion erforderlich',
@@ -238,7 +238,7 @@ var HcI18n = {
     en_resume: 'Programm fortsetzen',
     en_remote_start: 'Fernstart',
     en_remote_control: 'Fernsteuerung',
-    en_connectivity: 'Verbindung',
+    en_connectivity: 'Konnektivität',
     en_salt: 'Salz fast leer',
     en_rinse_aid: 'Klarspüler fast leer',
   },
@@ -268,7 +268,7 @@ var HcI18n = {
     confirm: '¿Confirmar?',
     pause: 'Pausar',
     resume: 'Reanudar',
-    power: 'Encendido',
+    power: 'Encendido/apagado',
     options: 'Opciones',
     options_not_loaded: 'Opciones no cargadas para este programa',
     reload_options: 'Cargar opciones',
@@ -312,7 +312,7 @@ var HcI18n = {
     en_finish_time: 'Hora de finalización',
     en_selected_program: 'Programa seleccionado',
     en_active_program: 'Programa activo',
-    en_power: 'Encendido',
+    en_power: 'Encendido/apagado',
     en_stop: 'Detener programa',
     en_pause: 'Pausar programa',
     en_resume: 'Reanudar programa',
@@ -390,7 +390,7 @@ var HC_ROLES = {
     test: (s) => s.attributes.device_class === 'timestamp' },
   selected_program: { domain: 'select', keys: ['selected_program'], id: /(selected_program|programme_selectionne)$/ },
   active_program: { domain: 'select', keys: ['active_program'], id: /(active_program|programme_actif)$/ },
-  power: { domain: 'switch', keys: ['power'], id: /(_power|_alimentation|_etat)$/ },
+  power: { domain: 'switch', keys: ['power'], id: /(_power|_alimentation)$/ },
   stop: { domain: 'button', keys: ['stop_program'], id: /(stop_program|arreter_le_programme)$/ },
   pause: { domain: 'button', keys: ['pause_program'], id: /(pause_program|mettre_en_pause.*)$/ },
   resume: { domain: 'button', keys: ['resume_program'], id: /(resume_program|reprendre_le_programme)$/ },
@@ -750,7 +750,10 @@ class HomeConnectBaseCard extends HTMLElement {
       if (this._error.states == null) this._error.states = states;
       else if (this._error.states !== states) this._clearError();
     }
-    var sig = JSON.stringify([this._lang(), r.deviceId, this._zoomed, this._confirming, this._reloading, this._starting,
+    // The device name and the 12/24 h preference are drawn too: a rename or a locale change redraws at once.
+    var dev = r.deviceId && hass.devices ? hass.devices[r.deviceId] : null;
+    var sig = JSON.stringify([this._lang(), r.deviceId, dev ? [dev.name_by_user, dev.name] : null,
+      hass.locale?.time_format, this._zoomed, this._confirming, this._reloading, this._starting,
       this._error ? [this._error.key, this._error.detail] : null, hcNoPowerOff.has(this._powerKey(r)), states]);
     if (sig === this._sig) return;
     // Don't rebuild while a dropdown is open in the card.
@@ -1407,7 +1410,7 @@ class HomeConnectCardEditor extends HTMLElement {
 
   _schema() {
     var t = (k) => hcT(this._lang(), k);
-    var kind = this.kind || (/washer-/.test(this._config.type || '') ? 'washer' : 'dishwasher');
+    var kind = this.kind || (/-washer-/.test(this._config.type || '') ? 'washer' : 'dishwasher');
     var domains = { operation_state: 'sensor', door: 'sensor', progress: 'sensor', finish_time: 'sensor',
       selected_program: 'select', active_program: 'select', power: 'switch', stop: 'button',
       pause: 'button', resume: 'button', remote_start: 'binary_sensor', remote_control: 'binary_sensor', connectivity: 'binary_sensor',
