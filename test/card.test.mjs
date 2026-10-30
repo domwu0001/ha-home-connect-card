@@ -71,6 +71,31 @@ test("Pause shows for a never-pressed (unknown) button, not for an unavailable o
   assert.doesNotMatch(render(HomeConnectWasherCard, mockHass({ pauseState: "unavailable" })), /data-action="pause"/);
 });
 
+test("custom input_boolean toggle renders, reflects state and calls input_boolean.toggle", async () => {
+  const hass = mockHass();
+  hass.states["input_boolean.washer_automation"] = st("on");
+  const calls = [];
+  hass.callService = (domain, service, data) => {
+    calls.push({ domain, service, data });
+    return Promise.resolve();
+  };
+  const card = new HomeConnectWasherCard();
+  card.setConfig({
+    device_id: "d2",
+    custom_toggle: { entity: "input_boolean.washer_automation", icon: "mdi:robot", name: "Automation" },
+  });
+  card.hass = hass;
+  assert.match(card.shadowRoot.innerHTML, /data-action="custom_toggle"/);
+  assert.match(card.shadowRoot.innerHTML, /class="power custom-toggle on"/);
+  assert.match(card.shadowRoot.innerHTML, /mdi:robot/);
+  card._onClick({ composedPath: () => [{ dataset: { action: "custom_toggle" }, disabled: false }] });
+  await Promise.resolve();
+  assert.deepEqual(calls, [{ domain: "input_boolean", service: "toggle", data: { entity_id: "input_boolean.washer_automation" } }]);
+  hass.states["input_boolean.washer_automation"] = st("off");
+  card.hass = { ...hass, states: { ...hass.states } };
+  assert.match(card.shadowRoot.innerHTML, /class="power custom-toggle"/);
+  assert.doesNotMatch(card.shadowRoot.innerHTML, /class="power custom-toggle on"/);
+});
 test("show_power: false hides the power button", () => {
   assert.match(render(HomeConnectWasherCard, mockHass()), /data-action="power"/);
   assert.doesNotMatch(render(HomeConnectWasherCard, mockHass(), { show_power: false }), /data-action="power"/);

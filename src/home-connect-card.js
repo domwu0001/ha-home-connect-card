@@ -57,6 +57,11 @@ var HcI18n = {
     ed_show_options: 'Options du programme',
     ed_show_alerts: 'Alertes',
     ed_show_power: 'Bouton marche / arrêt',
+    ed_custom_toggle: 'Bouton supplémentaire',
+    ed_custom_toggle_helper: 'Entité input_boolean à basculer depuis la carte',
+    ed_toggle_entity: 'Entité',
+    ed_toggle_icon: 'Icône',
+    ed_toggle_name: 'Nom / infobulle',
     ed_show_logo: 'Logo Home Connect',
     ed_zoom: 'Bouton détail',
     ed_zoom_helper: 'Bouton en haut à droite qui passe la mini-carte en carte complète et inversement',
@@ -136,6 +141,11 @@ var HcI18n = {
     ed_show_controls: 'Control buttons',
     ed_show_options: 'Program options',
     ed_show_power: 'Power button',
+    ed_custom_toggle: 'Additional toggle button',
+    ed_custom_toggle_helper: 'input_boolean entity to toggle from the card',
+    ed_toggle_entity: 'Entity',
+    ed_toggle_icon: 'Icon',
+    ed_toggle_name: 'Name / tooltip',
     ed_show_logo: 'Home Connect logo',
     ed_zoom: 'Detail button',
     ed_zoom_helper: 'Button at the top right that switches the mini card to the full card and back',
@@ -216,6 +226,11 @@ var HcI18n = {
     ed_show_controls: 'Steuerungsschaltflächen',
     ed_show_options: 'Programmoptionen',
     ed_show_power: 'Ein-/Aus-Schaltfläche',
+    ed_custom_toggle: 'Zusätzlicher Schalter',
+    ed_custom_toggle_helper: 'input_boolean-Entität, die über die Karte umgeschaltet wird',
+    ed_toggle_entity: 'Entität',
+    ed_toggle_icon: 'Symbol',
+    ed_toggle_name: 'Name / Tooltip',
     ed_show_logo: 'Home-Connect-Logo',
     ed_zoom: 'Detailansicht-Schaltfläche',
     ed_zoom_helper: 'Schaltfläche oben rechts zum Wechseln zwischen kompakter und vollständiger Kartenansicht',
@@ -296,6 +311,11 @@ var HcI18n = {
     ed_show_controls: 'Botones de control',
     ed_show_options: 'Opciones del programa',
     ed_show_power: 'Botón de encendido',
+    ed_custom_toggle: 'Botón adicional',
+    ed_custom_toggle_helper: 'Entidad input_boolean que se alterna desde la tarjeta',
+    ed_toggle_entity: 'Entidad',
+    ed_toggle_icon: 'Icono',
+    ed_toggle_name: 'Nombre / descripción',
     ed_show_logo: 'Logotipo de Home Connect',
     ed_zoom: 'Botón de detalle',
     ed_zoom_helper: 'Botón arriba a la derecha que cambia la mini tarjeta a la tarjeta completa y viceversa',
@@ -710,6 +730,7 @@ class HomeConnectBaseCard extends HTMLElement {
     Object.keys(HC_ROLES).forEach((role) => {
       ent[role] = over[role] || found.roles[role];
     });
+    ent.custom_toggle = this._config.custom_toggle?.entity;
     var used = Object.values(ent);
     // Everything else the integration exposes as a switch or select is a program option.
     ent.option_switches = found.switches.filter((id) => used.indexOf(id) < 0);
@@ -747,7 +768,7 @@ class HomeConnectBaseCard extends HTMLElement {
     var r = this._resolve();
     var ids = [r.ent.operation_state, r.ent.door, r.ent.progress, r.ent.finish_time, r.ent.selected_program,
       r.ent.active_program, r.ent.power, r.ent.remote_start, r.ent.remote_control, r.ent.connectivity, r.ent.salt, r.ent.rinse_aid,
-      r.ent.stop, r.ent.pause, r.ent.resume].concat(r.ent.option_switches, r.ent.option_selects);
+      r.ent.stop, r.ent.pause, r.ent.resume, r.ent.custom_toggle].concat(r.ent.option_switches, r.ent.option_selects);
     var hass = this._hass;
     var states = JSON.stringify(ids.map((id) => {
       var s = id && hass.states[id];
@@ -941,6 +962,11 @@ class HomeConnectBaseCard extends HTMLElement {
     var powerBtn = c.show_power && ent.power && online
       ? `<button class="power${powerOn ? ' on' : ''}" data-action="power" title="${hcEsc(powerTitle)}" aria-label="${this._t('power')}"${noOff ? ' disabled' : ''}><ha-icon icon="mdi:power"></ha-icon></button>`
       : '';
+    var toggleState = this._val(ent.custom_toggle);
+    var toggleConfig = c.custom_toggle || {};
+    var customToggleBtn = ent.custom_toggle && toggleState !== undefined && toggleState !== 'unavailable'
+      ? `<button class="power custom-toggle${toggleState === 'on' ? ' on' : ''}" data-action="custom_toggle" title="${hcEsc(toggleConfig.name || ent.custom_toggle)}" aria-label="${hcEsc(toggleConfig.name || ent.custom_toggle)}"><ha-icon icon="${hcEsc(toggleConfig.icon || 'mdi:toggle-switch')}"></ha-icon></button>`
+      : '';
 
     var errorHtml = this._error
       ? `<div class="error" role="alert" title="${hcEsc(this._error.detail)}"><ha-icon icon="mdi:alert-circle-outline"></ha-icon><span>${hcEsc(this._t(this._error.key))}</span></div>`
@@ -968,14 +994,14 @@ class HomeConnectBaseCard extends HTMLElement {
 
     if (this._compact()) {
       this.shadowRoot.innerHTML = this._miniHtml({ c, ent, name, color, state, statusText, running, online, powerOn, progress,
-        finish, progLabel, chips: chips.filter((x) => x.indexOf('chip warn') >= 0 || !online), art, logo, powerBtn });
+        finish, progLabel, chips: chips.filter((x) => x.indexOf('chip warn') >= 0 || !online), art, logo, powerBtn, customToggleBtn });
       return;
     }
 
     this.shadowRoot.innerHTML = this._styles(color) + '<ha-card>' +
       '<div class="header">' + logo +
         '<div class="titles"><div class="name">' + hcEsc(name) + '</div><div class="sub">' + hcEsc(sub) + '</div></div>' +
-        powerBtn + this._zoomButton() +
+        customToggleBtn + powerBtn + this._zoomButton() +
       '</div>' +
       heroHtml + programHtml + optionsHtml + errorHtml + controls +
     '</ha-card>';
@@ -1141,6 +1167,9 @@ class HomeConnectBaseCard extends HTMLElement {
       case 'power':
         this._power();
         break;
+      case 'custom_toggle':
+        this._customToggle();
+        break;
       case 'start':
         this._start();
         break;
@@ -1232,6 +1261,17 @@ class HomeConnectBaseCard extends HTMLElement {
       this._showError(HC_RETRYABLE.test(hcErrText(err)) ? 'start_rejected' : 'start_failed', err);
     } finally {
       this._starting = false;
+      this._update();
+    }
+  }
+
+  async _customToggle() {
+    var id = this._r.ent.custom_toggle;
+    if (!id) return;
+    try {
+      await this._call('input_boolean', 'toggle', { entity_id: id });
+    } catch (err) {
+      this._showError('command_failed', err);
       this._update();
     }
   }
@@ -1369,6 +1409,7 @@ var hcMini = (Base) => class extends Base {
 
     // Round buttons: start (or pause / resume) and power.
     var btns = c.show_controls && m.online && m.powerOn ? this._actionButtons(ent, m.state, m.running, true).btns : [];
+    if (m.customToggleBtn) btns.push(m.customToggleBtn);
     if (m.powerBtn) btns.push(m.powerBtn);
 
     var errorHtml = this._error
@@ -1445,6 +1486,14 @@ class HomeConnectCardEditor extends HTMLElement {
         ].concat(this.mini || /-mini-card$/.test(this._config.type || '') ? [{ name: 'zoom', selector: { boolean: {} } }] : []),
       },
       {
+        type: 'expandable', name: 'custom_toggle', title: t('ed_custom_toggle'), flatten: false,
+        schema: [
+          { name: 'entity', selector: { entity: { domain: 'input_boolean' } } },
+          { name: 'icon', selector: { icon: {} } },
+          { name: 'name', selector: { text: {} } },
+        ],
+      },
+      {
         name: 'language',
         selector: { select: { mode: 'dropdown', options: [{ value: 'fr', label: 'Français' }, { value: 'en', label: 'English' }, { value: 'de', label: 'Deutsch' }, { value: 'es', label: 'Español' }] } },
       },
@@ -1467,6 +1516,9 @@ class HomeConnectCardEditor extends HTMLElement {
     this._form.schema = this._schema();
     this._form.computeLabel = (s) => {
       if (HC_ROLES[s.name]) return hcT(lang, `en_${s.name}`);
+      if (s.name === 'entity') return hcT(lang, 'ed_toggle_entity');
+      if (s.name === 'icon') return hcT(lang, 'ed_toggle_icon');
+      if (s.name === 'name') return hcT(lang, 'ed_toggle_name');
       return hcT(lang, `ed_${s.name}`);
     };
     this._form.computeHelper = (s) => {
@@ -1487,6 +1539,11 @@ class HomeConnectCardEditor extends HTMLElement {
     Object.keys(HC_EDITOR_DEFAULTS).forEach((key) => {
       if (value[key] === HC_EDITOR_DEFAULTS[key]) delete value[key];
     });
+    if (value.custom_toggle) {
+      var toggle = Object.assign({}, value.custom_toggle);
+      Object.keys(toggle).forEach((k) => { if (!toggle[k]) delete toggle[k]; });
+      if (Object.keys(toggle).length) value.custom_toggle = toggle; else delete value.custom_toggle;
+    }
     if (value.entities) {
       var e = Object.assign({}, value.entities);
       Object.keys(e).forEach((k) => { if (!e[k]) delete e[k]; });
