@@ -62,6 +62,8 @@ var HcI18n = {
     ed_toggle_entity: 'Entité',
     ed_toggle_icon: 'Icône',
     ed_toggle_name: 'Nom',
+    ed_active_color: 'Couleur active',
+    ed_active_color_helper: 'Couleur du bouton lorsque l’entité est activée',
     ed_show_logo: 'Logo Home Connect',
     ed_zoom: 'Bouton détail',
     ed_zoom_helper: 'Bouton en haut à droite qui passe la mini-carte en carte complète et inversement',
@@ -146,6 +148,8 @@ var HcI18n = {
     ed_toggle_entity: 'Entity',
     ed_toggle_icon: 'Icon',
     ed_toggle_name: 'Name',
+    ed_active_color: 'Active color',
+    ed_active_color_helper: 'Button color while the entity is on',
     ed_show_logo: 'Home Connect logo',
     ed_zoom: 'Detail button',
     ed_zoom_helper: 'Button at the top right that switches the mini card to the full card and back',
@@ -231,6 +235,8 @@ var HcI18n = {
     ed_toggle_entity: 'Entität',
     ed_toggle_icon: 'Symbol',
     ed_toggle_name: 'Name',
+    ed_active_color: 'Aktivfarbe',
+    ed_active_color_helper: 'Farbe des Buttons, wenn die Entität eingeschaltet ist',
     ed_show_logo: 'Home-Connect-Logo',
     ed_zoom: 'Detailansicht-Schaltfläche',
     ed_zoom_helper: 'Schaltfläche oben rechts zum Wechseln zwischen kompakter und vollständiger Kartenansicht',
@@ -316,6 +322,8 @@ var HcI18n = {
     ed_toggle_entity: 'Entidad',
     ed_toggle_icon: 'Icono',
     ed_toggle_name: 'Nombre',
+    ed_active_color: 'Color activo',
+    ed_active_color_helper: 'Color del botón cuando la entidad está activada',
     ed_show_logo: 'Logotipo de Home Connect',
     ed_zoom: 'Botón de detalle',
     ed_zoom_helper: 'Botón arriba a la derecha que cambia la mini tarjeta a la tarjeta completa y viceversa',
@@ -351,6 +359,17 @@ function hcT(lang, key) {
 
 function hcEsc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// Accept Home Assistant's RGB color-picker value or a safe CSS color (including var(--...)).
+function hcCssColor(value) {
+  if (Array.isArray(value) && value.length === 3 && value.every((n) => Number.isFinite(n) && n >= 0 && n <= 255)) {
+    return `rgb(${value.map((n) => Math.round(n)).join(', ')})`;
+  }
+  if (typeof value !== 'string') return '';
+  var color = value.trim();
+  var safe = /^(#[0-9a-f]{3,4}|#[0-9a-f]{6}|#[0-9a-f]{8}|[a-z]+|rgba?\(\s*[\d.]+%?(?:\s*,\s*[\d.]+%?){2,3}\s*\)|hsla?\(\s*[-\d.]+(?:deg|rad|turn)?(?:\s*,\s*[-\d.]+%?){2,3}\s*\)|var\(\s*--[\w-]+\s*\))$/i;
+  return safe.test(color) ? color : '';
 }
 
 // Service call errors from Home Assistant: a websocket error object ({ code, message }) or an Error.
@@ -964,8 +983,10 @@ class HomeConnectBaseCard extends HTMLElement {
       : '';
     var toggleState = this._val(ent.custom_toggle);
     var toggleConfig = c.custom_toggle || {};
+    var toggleColor = hcCssColor(toggleConfig.active_color);
+    var toggleStyle = toggleState === 'on' && toggleColor ? ` style="--hc-toggle-color: ${hcEsc(toggleColor)}"` : '';
     var customToggleBtn = ent.custom_toggle && toggleState !== undefined && toggleState !== 'unavailable'
-      ? `<button class="power custom-toggle${toggleState === 'on' ? ' on' : ''}" data-action="custom_toggle" title="${hcEsc(toggleConfig.name || ent.custom_toggle)}" aria-label="${hcEsc(toggleConfig.name || ent.custom_toggle)}"><ha-icon icon="${hcEsc(toggleConfig.icon || 'mdi:toggle-switch')}"></ha-icon></button>`
+      ? `<button class="power custom-toggle${toggleState === 'on' ? ' on' : ''}" data-action="custom_toggle" title="${hcEsc(toggleConfig.name || ent.custom_toggle)}" aria-label="${hcEsc(toggleConfig.name || ent.custom_toggle)}"${toggleStyle}><ha-icon icon="${hcEsc(toggleConfig.icon || 'mdi:toggle-switch')}"></ha-icon></button>`
       : '';
 
     var errorHtml = this._error
@@ -1083,6 +1104,7 @@ class HomeConnectBaseCard extends HTMLElement {
       '.power { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;' +
         ' background: var(--secondary-background-color, rgba(128,128,128,0.12)); color: var(--secondary-text-color); }' +
       '.power.on { background: color-mix(in srgb, var(--hc-color) 15%, transparent); color: var(--hc-color); }' +
+      '.power.custom-toggle.on { background: color-mix(in srgb, var(--hc-toggle-color, var(--hc-color)) 15%, transparent); color: var(--hc-toggle-color, var(--hc-color)); }' +
       '.chips { display: flex; flex-wrap: wrap; gap: 6px; }' +
       '.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 1px 8px 1px 5px; border-radius: 12px;' +
         ' background: var(--secondary-background-color, rgba(128,128,128,0.12)); color: var(--secondary-text-color); }' +
@@ -1491,6 +1513,7 @@ class HomeConnectCardEditor extends HTMLElement {
           { name: 'entity', selector: { entity: { domain: 'input_boolean' } } },
           { name: 'icon', selector: { icon: {} } },
           { name: 'name', selector: { text: {} } },
+          { name: 'active_color', selector: { color_rgb: {} } },
         ],
       },
       {

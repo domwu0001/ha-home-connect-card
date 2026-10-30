@@ -99,6 +99,34 @@ test("custom input_boolean toggle renders, reflects state and calls input_boolea
   assert.match(card.shadowRoot.innerHTML, /class="power custom-toggle"/);
   assert.doesNotMatch(card.shadowRoot.innerHTML, /class="power custom-toggle on"/);
 });
+test("custom input_boolean toggle supports a custom active color", () => {
+  const hass = mockHass();
+  hass.states["input_boolean.washer_automation"] = st("on");
+  const config = {
+    device_id: "d2",
+    custom_toggle: { entity: "input_boolean.washer_automation", active_color: [255, 0, 0] },
+  };
+  const html = render(HomeConnectWasherCard, hass, config);
+  assert.match(html, /style="--hc-toggle-color: rgb\(255, 0, 0\)"/);
+  assert.match(html, /\.power\.custom-toggle\.on \{ background: color-mix/);
+
+  const variableHtml = render(HomeConnectWasherCard, hass, {
+    ...config,
+    custom_toggle: { ...config.custom_toggle, active_color: "var(--success-color)" },
+  });
+  assert.match(variableHtml, /--hc-toggle-color: var\(--success-color\)/);
+
+  hass.states["input_boolean.washer_automation"] = st("off");
+  const offHtml = render(HomeConnectWasherCard, hass, config);
+  assert.doesNotMatch(offHtml, /--hc-toggle-color/);
+});
+
+test("editor exposes the custom toggle active color picker", () => {
+  const schema = editor("washer", {})._schema().find((s) => s.name === "custom_toggle").schema;
+  assert.deepEqual(schema.find((s) => s.name === "active_color").selector, { color_rgb: {} });
+  assert.equal(editor("washer", { language: "de" })._form.computeLabel({ name: "active_color" }), "Aktivfarbe");
+});
+
 test("show_power: false hides the power button", () => {
   assert.match(render(HomeConnectWasherCard, mockHass()), /data-action="power"/);
   assert.doesNotMatch(render(HomeConnectWasherCard, mockHass(), { show_power: false }), /data-action="power"/);
