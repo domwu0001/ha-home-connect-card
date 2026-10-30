@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.13.0 - 2026-10-30
+### Changes
+- Added an optional active color for the custom `input_boolean` toggle, configurable in the visual editor or YAML.
+
+
 ## 1.12.0 - 2026-10-30
 ### Changes
 - Added new optional button for input_boolean entity
