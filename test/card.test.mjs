@@ -118,12 +118,16 @@ test("custom input_boolean toggle supports a custom active color", () => {
 
   hass.states["input_boolean.washer_automation"] = st("off");
   const offHtml = render(HomeConnectWasherCard, hass, config);
-  assert.doesNotMatch(offHtml, /--hc-toggle-color/);
+  const offButton = offHtml.match(/<button class="power custom-toggle[^>]*>/)?.[0];
+  assert.ok(offButton, "custom toggle button should still render while off");
+  assert.doesNotMatch(offButton, /style="--hc-toggle-color:/);
 });
 
 test("editor exposes the custom toggle active color picker", () => {
   const schema = editor("washer", {})._schema().find((s) => s.name === "custom_toggle").schema;
-  assert.deepEqual(schema.find((s) => s.name === "active_color").selector, { color_rgb: {} });
+  const colorSelector = schema.find((s) => s.name === "active_color").selector;
+  assert.ok(colorSelector.color_rgb, "active_color should use Home Assistant's RGB color selector");
+  assert.equal(Object.keys(colorSelector).length, 1);
   assert.equal(editor("washer", { language: "de" })._form.computeLabel({ name: "active_color" }), "Aktivfarbe");
 });
 
