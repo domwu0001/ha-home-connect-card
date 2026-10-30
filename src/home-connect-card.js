@@ -57,6 +57,11 @@ var HcI18n = {
     ed_show_options: 'Options du programme',
     ed_show_alerts: 'Alertes',
     ed_show_power: 'Bouton marche / arrêt',
+    ed_custom_toggle: 'Bouton supplémentaire',
+    ed_custom_toggle_helper: 'Entité input_boolean à basculer depuis la carte',
+    ed_toggle_entity: 'Entité',
+    ed_toggle_icon: 'Icône',
+    ed_toggle_name: 'Nom / infobulle',
     ed_show_logo: 'Logo Home Connect',
     ed_zoom: 'Bouton détail',
     ed_zoom_helper: 'Bouton en haut à droite qui passe la mini-carte en carte complète et inversement',
@@ -136,6 +141,11 @@ var HcI18n = {
     ed_show_controls: 'Control buttons',
     ed_show_options: 'Program options',
     ed_show_power: 'Power button',
+    ed_custom_toggle: 'Additional toggle button',
+    ed_custom_toggle_helper: 'input_boolean entity to toggle from the card',
+    ed_toggle_entity: 'Entity',
+    ed_toggle_icon: 'Icon',
+    ed_toggle_name: 'Name / tooltip',
     ed_show_logo: 'Home Connect logo',
     ed_zoom: 'Detail button',
     ed_zoom_helper: 'Button at the top right that switches the mini card to the full card and back',
@@ -167,7 +177,7 @@ var HcI18n = {
     washer: 'Waschmaschine',
     st_inactive: 'Inaktiv',
     st_ready: 'Bereit',
-    st_delayedstart: 'Zeitverzögerter Start',
+    st_delayedstart: 'Verzögerter Start',
     st_run: 'Läuft',
     st_pause: 'Pausiert',
     st_actionrequired: 'Aktion erforderlich',
@@ -216,6 +226,11 @@ var HcI18n = {
     ed_show_controls: 'Steuerungsschaltflächen',
     ed_show_options: 'Programmoptionen',
     ed_show_power: 'Ein-/Aus-Schaltfläche',
+    ed_custom_toggle: 'Zusätzlicher Schalter',
+    ed_custom_toggle_helper: 'input_boolean-Entität, die über die Karte umgeschaltet wird',
+    ed_toggle_entity: 'Entität',
+    ed_toggle_icon: 'Symbol',
+    ed_toggle_name: 'Name / Tooltip',
     ed_show_logo: 'Home-Connect-Logo',
     ed_zoom: 'Detailansicht-Schaltfläche',
     ed_zoom_helper: 'Schaltfläche oben rechts zum Wechseln zwischen kompakter und vollständiger Kartenansicht',
@@ -238,9 +253,94 @@ var HcI18n = {
     en_resume: 'Programm fortsetzen',
     en_remote_start: 'Fernstart',
     en_remote_control: 'Fernsteuerung',
-    en_connectivity: 'Verbindung',
+    en_connectivity: 'Konnektivität',
     en_salt: 'Salz fast leer',
     en_rinse_aid: 'Klarspüler fast leer',
+  },
+  es: {
+    dishwasher: 'Lavavajillas',
+    washer: 'Lavadora',
+    st_inactive: 'Inactivo',
+    st_ready: 'Listo',
+    st_delayedstart: 'Inicio diferido',
+    st_run: 'En marcha',
+    st_pause: 'En pausa',
+    st_actionrequired: 'Acción necesaria',
+    st_finished: 'Terminado',
+    st_error: 'Error',
+    st_aborting: 'Cancelando',
+    st_off: 'Apagado',
+    st_unavailable: 'No disponible',
+    door_open: 'Puerta abierta',
+    door_closed: 'Puerta cerrada',
+    door_locked: 'Puerta bloqueada',
+    program: 'Programa',
+    no_program: 'Sin programa',
+    ends_at: 'Termina a las',
+    remaining: 'Quedan {t}',
+    start: 'Iniciar',
+    stop: 'Detener',
+    confirm: '¿Confirmar?',
+    pause: 'Pausar',
+    resume: 'Reanudar',
+    power: 'Encendido/apagado',
+    options: 'Opciones',
+    options_not_loaded: 'Opciones no cargadas para este programa',
+    reload_options: 'Cargar opciones',
+    options_local: 'Se está configurando en el aparato: opciones no disponibles',
+    starting: 'Iniciando…',
+    start_rejected: 'El aparato ha rechazado el inicio. Comprueba la puerta y el inicio remoto, y vuelve a intentarlo.',
+    start_failed: 'No se ha podido iniciar el programa.',
+    reload_failed: 'No se han podido cargar las opciones. Vuelve a intentarlo en un momento.',
+    restore_failed: 'No se ha podido restaurar el programa original: compruébalo en el aparato.',
+    power_off_unsupported: 'Este aparato no se puede apagar a distancia.',
+    power_failed: 'El aparato no ha respondido a la orden de encendido/apagado.',
+    command_failed: 'El aparato ha rechazado la orden. Vuelve a intentarlo en un momento.',
+    option_failed: 'No se ha podido cambiar la opción. Vuelve a intentarlo en un momento.',
+    salt: 'Sal casi agotada',
+    rinse_aid: 'Abrillantador casi agotado',
+    remote_start_off: 'Inicio remoto desactivado',
+    offline: 'Aparato sin conexión',
+    no_device: 'No se ha encontrado ningún aparato Home Connect',
+    ed_device_id: 'Aparato',
+    ed_device_id_helper: 'Dispositivo de la integración Home Connect',
+    ed_name: 'Nombre',
+    ed_name_helper: 'Déjalo vacío para usar el nombre del dispositivo',
+    ed_icon: 'Icono',
+    ed_show_program: 'Selector de programa',
+    ed_show_controls: 'Botones de control',
+    ed_show_options: 'Opciones del programa',
+    ed_show_power: 'Botón de encendido',
+    ed_custom_toggle: 'Botón adicional',
+    ed_custom_toggle_helper: 'Entidad input_boolean que se alterna desde la tarjeta',
+    ed_toggle_entity: 'Entidad',
+    ed_toggle_icon: 'Icono',
+    ed_toggle_name: 'Nombre / descripción',
+    ed_show_logo: 'Logotipo de Home Connect',
+    ed_zoom: 'Botón de detalle',
+    ed_zoom_helper: 'Botón arriba a la derecha que cambia la mini tarjeta a la tarjeta completa y viceversa',
+    zoom_in: 'Mostrar la tarjeta completa',
+    zoom_out: 'Volver a la vista compacta',
+    ed_show_alerts: 'Alertas',
+    ed_language: 'Idioma',
+    ed_language_helper: 'Déjalo vacío para seguir el idioma de Home Assistant',
+    ed_entities: 'Entidades (avanzado)',
+    ed_entities_helper: 'Se detectan automáticamente a partir del dispositivo; indica una solo para sustituirla',
+    en_operation_state: 'Estado de funcionamiento',
+    en_door: 'Puerta',
+    en_progress: 'Progreso',
+    en_finish_time: 'Hora de finalización',
+    en_selected_program: 'Programa seleccionado',
+    en_active_program: 'Programa activo',
+    en_power: 'Encendido/apagado',
+    en_stop: 'Detener programa',
+    en_pause: 'Pausar programa',
+    en_resume: 'Reanudar programa',
+    en_remote_start: 'Inicio remoto',
+    en_remote_control: 'Control remoto',
+    en_connectivity: 'Conectividad',
+    en_salt: 'Sal casi agotada',
+    en_rinse_aid: 'Abrillantador casi agotado',
   }
 };
 
@@ -310,7 +410,7 @@ var HC_ROLES = {
     test: (s) => s.attributes.device_class === 'timestamp' },
   selected_program: { domain: 'select', keys: ['selected_program'], id: /(selected_program|programme_selectionne)$/ },
   active_program: { domain: 'select', keys: ['active_program'], id: /(active_program|programme_actif)$/ },
-  power: { domain: 'switch', keys: ['power'], id: /(_power|_alimentation|_etat)$/ },
+  power: { domain: 'switch', keys: ['power'], id: /(_power|_alimentation)$/ },
   stop: { domain: 'button', keys: ['stop_program'], id: /(stop_program|arreter_le_programme)$/ },
   pause: { domain: 'button', keys: ['pause_program'], id: /(pause_program|mettre_en_pause.*)$/ },
   resume: { domain: 'button', keys: ['resume_program'], id: /(resume_program|reprendre_le_programme)$/ },
@@ -569,6 +669,8 @@ class HomeConnectBaseCard extends HTMLElement {
       };
       this.shadowRoot.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') unfreeze(); });
       this.addEventListener('mouseleave', unfreeze);
+      // Touch: a drop-down closed without a change only loses focus. Re-check once focus has moved.
+      this.shadowRoot.addEventListener('focusout', () => setTimeout(() => this._update()));
     }
     this._sig = null;
     this._update();
@@ -587,12 +689,18 @@ class HomeConnectBaseCard extends HTMLElement {
       this._sig = null;
       this._update();
     }, 30000);
+    // Back on screen: redraw now (state reset on disconnect) instead of waiting for the next hass update.
+    this._update();
   }
 
   disconnectedCallback() {
     clearInterval(this._timer);
     clearTimeout(this._confirmTimer);
     clearTimeout(this._errorTimer);
+    // The cancelled timers would have reset these: an armed Stop or an old error must not survive leaving the view.
+    this._confirming = null;
+    this._error = null;
+    this._sig = null;
   }
 
   getCardSize() { return 4; }
@@ -622,6 +730,7 @@ class HomeConnectBaseCard extends HTMLElement {
     Object.keys(HC_ROLES).forEach((role) => {
       ent[role] = over[role] || found.roles[role];
     });
+    ent.custom_toggle = this._config.custom_toggle?.entity;
     var used = Object.values(ent);
     // Everything else the integration exposes as a switch or select is a program option.
     ent.option_switches = found.switches.filter((id) => used.indexOf(id) < 0);
@@ -659,7 +768,7 @@ class HomeConnectBaseCard extends HTMLElement {
     var r = this._resolve();
     var ids = [r.ent.operation_state, r.ent.door, r.ent.progress, r.ent.finish_time, r.ent.selected_program,
       r.ent.active_program, r.ent.power, r.ent.remote_start, r.ent.remote_control, r.ent.connectivity, r.ent.salt, r.ent.rinse_aid,
-      r.ent.stop, r.ent.pause, r.ent.resume].concat(r.ent.option_switches, r.ent.option_selects);
+      r.ent.stop, r.ent.pause, r.ent.resume, r.ent.custom_toggle].concat(r.ent.option_switches, r.ent.option_selects);
     var hass = this._hass;
     var states = JSON.stringify(ids.map((id) => {
       var s = id && hass.states[id];
@@ -670,7 +779,10 @@ class HomeConnectBaseCard extends HTMLElement {
       if (this._error.states == null) this._error.states = states;
       else if (this._error.states !== states) this._clearError();
     }
-    var sig = JSON.stringify([this._lang(), r.deviceId, this._zoomed, this._confirming, this._reloading, this._starting,
+    // The device name and the 12/24 h preference are drawn too: a rename or a locale change redraws at once.
+    var dev = r.deviceId && hass.devices ? hass.devices[r.deviceId] : null;
+    var sig = JSON.stringify([this._lang(), r.deviceId, dev ? [dev.name_by_user, dev.name] : null,
+      hass.locale?.time_format, this._zoomed, this._confirming, this._reloading, this._starting,
       this._error ? [this._error.key, this._error.detail] : null, hcNoPowerOff.has(this._powerKey(r)), states]);
     if (sig === this._sig) return;
     // Don't rebuild while a dropdown is open in the card.
@@ -850,6 +962,11 @@ class HomeConnectBaseCard extends HTMLElement {
     var powerBtn = c.show_power && ent.power && online
       ? `<button class="power${powerOn ? ' on' : ''}" data-action="power" title="${hcEsc(powerTitle)}" aria-label="${this._t('power')}"${noOff ? ' disabled' : ''}><ha-icon icon="mdi:power"></ha-icon></button>`
       : '';
+    var toggleState = this._val(ent.custom_toggle);
+    var toggleConfig = c.custom_toggle || {};
+    var customToggleBtn = ent.custom_toggle && toggleState !== undefined && toggleState !== 'unavailable'
+      ? `<button class="power custom-toggle${toggleState === 'on' ? ' on' : ''}" data-action="custom_toggle" title="${hcEsc(toggleConfig.name || ent.custom_toggle)}" aria-label="${hcEsc(toggleConfig.name || ent.custom_toggle)}"><ha-icon icon="${hcEsc(toggleConfig.icon || 'mdi:toggle-switch')}"></ha-icon></button>`
+      : '';
 
     var errorHtml = this._error
       ? `<div class="error" role="alert" title="${hcEsc(this._error.detail)}"><ha-icon icon="mdi:alert-circle-outline"></ha-icon><span>${hcEsc(this._t(this._error.key))}</span></div>`
@@ -877,14 +994,14 @@ class HomeConnectBaseCard extends HTMLElement {
 
     if (this._compact()) {
       this.shadowRoot.innerHTML = this._miniHtml({ c, ent, name, color, state, statusText, running, online, powerOn, progress,
-        finish, progLabel, chips: chips.filter((x) => x.indexOf('chip warn') >= 0 || !online), art, logo, powerBtn });
+        finish, progLabel, chips: chips.filter((x) => x.indexOf('chip warn') >= 0 || !online), art, logo, powerBtn, customToggleBtn });
       return;
     }
 
     this.shadowRoot.innerHTML = this._styles(color) + '<ha-card>' +
       '<div class="header">' + logo +
         '<div class="titles"><div class="name">' + hcEsc(name) + '</div><div class="sub">' + hcEsc(sub) + '</div></div>' +
-        powerBtn + this._zoomButton() +
+        customToggleBtn + powerBtn + this._zoomButton() +
       '</div>' +
       heroHtml + programHtml + optionsHtml + errorHtml + controls +
     '</ha-card>';
@@ -1050,6 +1167,9 @@ class HomeConnectBaseCard extends HTMLElement {
       case 'power':
         this._power();
         break;
+      case 'custom_toggle':
+        this._customToggle();
+        break;
       case 'start':
         this._start();
         break;
@@ -1141,6 +1261,17 @@ class HomeConnectBaseCard extends HTMLElement {
       this._showError(HC_RETRYABLE.test(hcErrText(err)) ? 'start_rejected' : 'start_failed', err);
     } finally {
       this._starting = false;
+      this._update();
+    }
+  }
+
+  async _customToggle() {
+    var id = this._r.ent.custom_toggle;
+    if (!id) return;
+    try {
+      await this._call('input_boolean', 'toggle', { entity_id: id });
+    } catch (err) {
+      this._showError('command_failed', err);
       this._update();
     }
   }
@@ -1278,6 +1409,7 @@ var hcMini = (Base) => class extends Base {
 
     // Round buttons: start (or pause / resume) and power.
     var btns = c.show_controls && m.online && m.powerOn ? this._actionButtons(ent, m.state, m.running, true).btns : [];
+    if (m.customToggleBtn) btns.push(m.customToggleBtn);
     if (m.powerBtn) btns.push(m.powerBtn);
 
     var errorHtml = this._error
@@ -1327,7 +1459,7 @@ class HomeConnectCardEditor extends HTMLElement {
 
   _schema() {
     var t = (k) => hcT(this._lang(), k);
-    var kind = this.kind || (/washer-/.test(this._config.type || '') ? 'washer' : 'dishwasher');
+    var kind = this.kind || (/-washer-/.test(this._config.type || '') ? 'washer' : 'dishwasher');
     var domains = { operation_state: 'sensor', door: 'sensor', progress: 'sensor', finish_time: 'sensor',
       selected_program: 'select', active_program: 'select', power: 'switch', stop: 'button',
       pause: 'button', resume: 'button', remote_start: 'binary_sensor', remote_control: 'binary_sensor', connectivity: 'binary_sensor',
@@ -1354,8 +1486,16 @@ class HomeConnectCardEditor extends HTMLElement {
         ].concat(this.mini || /-mini-card$/.test(this._config.type || '') ? [{ name: 'zoom', selector: { boolean: {} } }] : []),
       },
       {
+        type: 'expandable', name: 'custom_toggle', title: t('ed_custom_toggle'), flatten: false,
+        schema: [
+          { name: 'entity', selector: { entity: { domain: 'input_boolean' } } },
+          { name: 'icon', selector: { icon: {} } },
+          { name: 'name', selector: { text: {} } },
+        ],
+      },
+      {
         name: 'language',
-        selector: { select: { mode: 'dropdown', options: [{ value: 'fr', label: 'Français' }, { value: 'en', label: 'English' }, { value: 'de', label: 'Deutsch' }] } },
+        selector: { select: { mode: 'dropdown', options: [{ value: 'fr', label: 'Français' }, { value: 'en', label: 'English' }, { value: 'de', label: 'Deutsch' }, { value: 'es', label: 'Español' }] } },
       },
       {
         type: 'expandable', name: 'entities', title: t('ed_entities'), flatten: false,
@@ -1376,6 +1516,9 @@ class HomeConnectCardEditor extends HTMLElement {
     this._form.schema = this._schema();
     this._form.computeLabel = (s) => {
       if (HC_ROLES[s.name]) return hcT(lang, `en_${s.name}`);
+      if (s.name === 'entity') return hcT(lang, 'ed_toggle_entity');
+      if (s.name === 'icon') return hcT(lang, 'ed_toggle_icon');
+      if (s.name === 'name') return hcT(lang, 'ed_toggle_name');
       return hcT(lang, `ed_${s.name}`);
     };
     this._form.computeHelper = (s) => {
@@ -1396,6 +1539,11 @@ class HomeConnectCardEditor extends HTMLElement {
     Object.keys(HC_EDITOR_DEFAULTS).forEach((key) => {
       if (value[key] === HC_EDITOR_DEFAULTS[key]) delete value[key];
     });
+    if (value.custom_toggle) {
+      var toggle = Object.assign({}, value.custom_toggle);
+      Object.keys(toggle).forEach((k) => { if (!toggle[k]) delete toggle[k]; });
+      if (Object.keys(toggle).length) value.custom_toggle = toggle; else delete value.custom_toggle;
+    }
     if (value.entities) {
       var e = Object.assign({}, value.entities);
       Object.keys(e).forEach((k) => { if (!e[k]) delete e[k]; });

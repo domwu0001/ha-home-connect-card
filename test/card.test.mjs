@@ -71,6 +71,31 @@ test("Pause shows for a never-pressed (unknown) button, not for an unavailable o
   assert.doesNotMatch(render(HomeConnectWasherCard, mockHass({ pauseState: "unavailable" })), /data-action="pause"/);
 });
 
+test("custom input_boolean toggle renders, reflects state and calls input_boolean.toggle", async () => {
+  const hass = mockHass();
+  hass.states["input_boolean.washer_automation"] = st("on");
+  const calls = [];
+  hass.callService = (domain, service, data) => {
+    calls.push({ domain, service, data });
+    return Promise.resolve();
+  };
+  const card = new HomeConnectWasherCard();
+  card.setConfig({
+    device_id: "d2",
+    custom_toggle: { entity: "input_boolean.washer_automation", icon: "mdi:robot", name: "Automation" },
+  });
+  card.hass = hass;
+  assert.match(card.shadowRoot.innerHTML, /data-action="custom_toggle"/);
+  assert.match(card.shadowRoot.innerHTML, /class="power custom-toggle on"/);
+  assert.match(card.shadowRoot.innerHTML, /mdi:robot/);
+  card._onClick({ composedPath: () => [{ dataset: { action: "custom_toggle" }, disabled: false }] });
+  await Promise.resolve();
+  assert.deepEqual(calls, [{ domain: "input_boolean", service: "toggle", data: { entity_id: "input_boolean.washer_automation" } }]);
+  hass.states["input_boolean.washer_automation"] = st("off");
+  card.hass = { ...hass, states: { ...hass.states } };
+  assert.match(card.shadowRoot.innerHTML, /class="power custom-toggle"/);
+  assert.doesNotMatch(card.shadowRoot.innerHTML, /class="power custom-toggle on"/);
+});
 test("show_power: false hides the power button", () => {
   assert.match(render(HomeConnectWasherCard, mockHass()), /data-action="power"/);
   assert.doesNotMatch(render(HomeConnectWasherCard, mockHass(), { show_power: false }), /data-action="power"/);
@@ -177,4 +202,55 @@ test("editor lists the connectivity, salt and rinse aid overrides where they app
   assert.ok(roles("washer").includes("connectivity"));
   assert.ok(roles("washer").includes("pause"));
   assert.ok(!roles("washer").includes("salt"));
+});
+
+test("I18N parity: every language has exactly the English keys and placeholders", () => {
+  const { HcI18n } = loadCard("home-connect-card.js", ["HcI18n"]);
+  const ref = Object.keys(HcI18n.en).sort();
+  for (const lang of ["fr", "de", "es"]) {
+    assert.deepEqual(Object.keys(HcI18n[lang]).sort(), ref, `${lang} keys`);
+    for (const k of ref) {
+      const ph = (s) => (String(s).match(/\{\w+\}/g) || []).sort();
+      assert.deepEqual(ph(HcI18n[lang][k]), ph(HcI18n.en[k]), `${lang}.${k} placeholders`);
+    }
+  }
+});
+
+test("editor offers Deutsch and Español and follows them", () => {
+  assert.equal(editor("washer", { language: "de" })._form.computeLabel({ name: "name" }), "Name");
+  assert.equal(editor("washer", { language: "es" })._form.computeLabel({ name: "name" }), "Nombre");
+  assert.equal(editor("washer", {}, "es-ES")._form.computeLabel({ name: "name" }), "Nombre");
+});
+
+test("an option switch ending in _etat is never taken for the power switch", () => {
+  const hass = mockHass();
+  delete hass.states["switch.wm_power"];
+  delete hass.entities["switch.wm_power"];
+  hass.states["switch.wm_securite_enfants_etat"] = st("off");
+  hass.entities["switch.wm_securite_enfants_etat"] = { entity_id: "switch.wm_securite_enfants_etat", device_id: "d2" };
+  const card = new HomeConnectWasherCard();
+  card.setConfig({ device_id: "d2" });
+  card.hass = hass;
+  assert.equal(card._resolve().ent.power, undefined);
+  assert.doesNotMatch(card.shadowRoot.innerHTML, /data-action="power"/);
+});
+
+test("editor without a kind tells the dishwasher type from the washer type", () => {
+  const kindOf = (type) => editor(undefined, { type })._schema().find((s) => s.name === "entities").schema.map((s) => s.name);
+  assert.ok(kindOf("custom:home-connect-dishwasher-card").includes("salt"));
+  assert.ok(kindOf("custom:home-connect-washer-card").includes("pause"));
+  assert.ok(kindOf("custom:home-connect-washer-mini-card").includes("pause"));
+});
+
+test("renaming the device or switching 12/24 h redraws the card at once", () => {
+  const hass = mockHass();
+  const card = new HomeConnectWasherCard();
+  card.setConfig({ device_id: "d2" });
+  card.hass = hass;
+  assert.match(card.shadowRoot.innerHTML, /Washer/);
+  card.hass = { ...hass, devices: { ...hass.devices, d2: { name: "Washer", name_by_user: "Laundry" } } };
+  assert.match(card.shadowRoot.innerHTML, /Laundry/);
+  const before = card._sig;
+  card.hass = { ...card._hass, locale: { time_format: "12" } };
+  assert.notEqual(card._sig, before);
 });

@@ -25,7 +25,7 @@ Pick the appliance, the card finds all its entities by itself.
 - Program options before starting: temperature, spin speed, Vario Perfect for washers; intensive zone, brilliance dry, speed perfect, hygiene plus for dishwashers… whatever your appliance exposes. Options the selected program doesn't support are greyed out
 - Door state, salt and rinse aid alerts
 - Visual editor in the dashboard UI (no YAML needed)
-- English and French, follows the Home Assistant language
+- English, French, German and Spanish, follows the Home Assistant language
 - Light and dark theme compatible
 - Single file, no dependencies, HACS-ready
 
@@ -99,6 +99,10 @@ show_options: true
 show_controls: true
 show_alerts: true
 show_power: true
+custom_toggle:
+  entity: input_boolean.dishwasher_automation
+  icon: mdi:robot
+  name: Automation
 show_logo: true
 language: en
 entities:
@@ -120,9 +124,10 @@ entities:
 | `show_controls` | ❌ | `true` | Show Start / Pause / Resume / Stop buttons |
 | `show_alerts` | ❌ | `true` | Show salt and rinse aid alerts |
 | `show_power` | ❌ | `true` | Show the power button (turn off for appliances that can't be switched on / off remotely) |
+| `custom_toggle` | ❌ | — | Optional additional toggle button: `entity` (an `input_boolean`), optional `icon` and `name`; shown next to the power button in full and mini cards |
 | `show_logo` | ❌ | `true` | Show the Home Connect logo in the header |
 | `zoom` | ❌ | `true` | Mini cards only: detail button at the top right that unfolds the full card (a click elsewhere folds it back) |
-| `language` | ❌ | Auto | Force language: `fr` or `en` (auto-detects from HA settings) |
+| `language` | ❌ | Auto | Force language: `fr`, `en`, `de` or `es` (auto-detects from HA settings) |
 | `entities` | ❌ | Auto | Override detected entities (see below) |
 
 ### Entity overrides
@@ -226,6 +231,8 @@ The card auto-detects the language from your Home Assistant settings. Currently 
 |---|---|
 | English | `en` |
 | Français | `fr` |
+| Deutsch | `de` |
+| Español | `es` |
 
 Contributions for additional languages are welcome!
 
