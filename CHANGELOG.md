@@ -1,5 +1,9 @@
 # Changelog
 
+# 1.12.0 - 20226-10-30
+### Changes
+- Added new optional button for input_boolean entity
+
 ## 1.11.2 - 2026-10-29
 ### Fixes
 - Leaving the view right after tapping Stop no longer leaves the button armed: back on the view it shows Stop again, so a single tap can't stop the program. An error message no longer stays on screen either.
