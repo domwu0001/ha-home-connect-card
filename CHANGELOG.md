@@ -1,6 +1,6 @@
 # Changelog
 
-# 1.12.0 - 2026-10-30
+## 1.12.0 - 2026-10-30
 ### Changes
 - Added new optional button for input_boolean entity
 
