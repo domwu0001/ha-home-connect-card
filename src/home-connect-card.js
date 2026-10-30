@@ -1539,6 +1539,11 @@ class HomeConnectCardEditor extends HTMLElement {
     Object.keys(HC_EDITOR_DEFAULTS).forEach((key) => {
       if (value[key] === HC_EDITOR_DEFAULTS[key]) delete value[key];
     });
+    if (value.custom_toggle) {
+      var toggle = Object.assign({}, value.custom_toggle);
+      Object.keys(toggle).forEach((k) => { if (!toggle[k]) delete toggle[k]; });
+      if (Object.keys(toggle).length) value.custom_toggle = toggle; else delete value.custom_toggle;
+    }
     if (value.entities) {
       var e = Object.assign({}, value.entities);
       Object.keys(e).forEach((k) => { if (!e[k]) delete e[k]; });
