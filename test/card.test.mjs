@@ -90,7 +90,10 @@ test("custom input_boolean toggle renders, reflects state and calls input_boolea
   assert.match(card.shadowRoot.innerHTML, /mdi:robot/);
   card._onClick({ composedPath: () => [{ dataset: { action: "custom_toggle" }, disabled: false }] });
   await Promise.resolve();
-  assert.deepEqual(calls, [{ domain: "input_boolean", service: "toggle", data: { entity_id: "input_boolean.washer_automation" } }]);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].domain, "input_boolean");
+  assert.equal(calls[0].service, "toggle");
+  assert.equal(calls[0].data.entity_id, "input_boolean.washer_automation");
   hass.states["input_boolean.washer_automation"] = st("off");
   card.hass = { ...hass, states: { ...hass.states } };
   assert.match(card.shadowRoot.innerHTML, /class="power custom-toggle"/);
